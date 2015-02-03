@@ -1,0 +1,14 @@
+*~
+src
+buildroot
+services/repos/zenoss5x/Dockerfile
+devimg/Dockerfile
+*.py[cod]
+output/
+
+# OSX
+.DS_Store
+
+# IntelliJ
+.idea
+*.iml
