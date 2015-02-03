@@ -57,6 +57,7 @@ $(PKGROOT)/$(RPM):
 		-v $(PKG_VERSION) \
 		-d 'shadow-utils = 2:4.1.5.1' \
 		-d 'dmidecode = 1:2.12' \
+		-d 'gzip' \
 		-d 'hiredis = 0.11.0' \
 		-d 'java-1.7.0-openjdk-headless = 1:1.7.0.75' \
 		-d 'krb5-workstation = 1.11.3' \
@@ -88,8 +89,12 @@ $(PKGROOT)/$(RPM):
 		-d 'python-kerberos = 1.1' \
 		-d 'rabbitmq-server = 3.3.5' \
 		-d 'redis = 2.8.14'\
+		-d 'rsync' \
 		-d sysstat \
+		-d 'sudo >= 1.8.6'
 		-d 'supervisor = 3.0' \
+		-d 'tar' \
+		-d 'wget' \
 		-a $(PLATFORM) \
 		-m '$(MAINTAINER)' \
 		--iteration $(ITERATION) \

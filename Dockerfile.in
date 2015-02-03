@@ -13,16 +13,11 @@ rpmdb --rebuilddb && \
 yum install -y \
     emacs-nox \
     file \
-    gzip \
-    rsync \
-    tar \
     telnet \
     traceroute \
     vim \
-    wget \
     which \
     zip \
-    sudo>=1.8.6 \
     openssh-clients \
     binutils \
     device-mapper-libs \
@@ -31,21 +26,8 @@ yum install -y \
     openssl-devel \
     pcre-devel \
     protobuf-python \
-    alsa-lib \
-    bind-libs \
-    bind-license \
-    bind-utils \
-    flac-libs \
-    gsm \
     libart_lgpl \
     libasyncns \
-    libogg \
-    libsndfile \
-    libtirpc \
-    libvorbis \
-    rpcbind \
-    ttmkfdir \
-    tzdata-java \
     xorg-x11-fonts-Type1 && \
 yum erase epel-release -y && \
 yum clean all
