@@ -55,43 +55,41 @@ $(PKGROOT)/$(RPM):
 		-p /pkg \
 		-n $(FULL_NAME) \
 		-v $(PKG_VERSION) \
-		-d shadow-utils \
-		-d dmidecode \
-		-d gnupg \
-		-d gzip \
-		-d hiredis \
-		-d krb5-workstation \
-		-d libcap \
-		-d libsmi \
-		-d 'libxslt >= 1.1' \
-		-d mariadb-server \
-		-d 'nagios-plugins >= 1.4.15' \
-		-d 'nagios-plugins-dig  >= 1.4.15' \
-		-d 'nagios-plugins-dns  >= 1.4.15' \
-		-d 'nagios-plugins-http >= 1.4.15' \
-		-d 'nagios-plugins-ircd >= 1.4.15' \
-		-d 'nagios-plugins-ldap >= 1.4.15' \
-		-d 'nagios-plugins-ntp  >= 1.4.15' \
-		-d 'nagios-plugins-ping >= 1.4.15' \
-		-d 'nagios-plugins-rpc  >= 1.4.15' \
-		-d 'nagios-plugins-tcp  >= 1.4.15' \
-		-d 'net-snmp-utils >= 5.3.2.2-9' \
-		-d net-tools \
-		-d nmap \
-		-d openssl \
-		-d patch \
-		-d patch \
-		-d 'python >= 2.7.0' \
-		-d python-kerberos \
-		-d 'rabbitmq-server >= 2.8.6' \
-		-d readline \
-		-d redis \
-		-d rsync \
+		-d 'shadow-utils = 2:4.1.5.1' \
+		-d 'dmidecode = 1:2.12' \
+		-d 'hiredis = 0.11.0' \
+		-d 'java-1.7.0-openjdk-headless = 1:1.7.0.75' \
+		-d 'krb5-workstation = 1.11.3' \
+		-d 'libsmi = 0.4.8' \
+		-d 'mariadb-server = 1:5.5.40' \
+		-d 'memcached = 1.4.15' \
+		-d 'MySQL-python = 1.2.3' \
+		-d 'nagios-common = 3.5.1' \
+		-d 'nagios-plugins = 2.0.1' \
+		-d 'nagios-plugins-perl = 2.0.1' \
+		-d 'nagios-plugins-dig  = 2.0.1' \
+		-d 'nagios-plugins-dns  = 2.0.1' \
+		-d 'nagios-plugins-http = 2.0.1' \
+		-d 'nagios-plugins-ircd = 2.0.1' \
+		-d 'nagios-plugins-ldap = 2.0.1' \
+		-d 'nagios-plugins-ntp  = 2.0.1' \
+		-d 'nagios-plugins-ping = 2.0.1' \
+		-d 'nagios-plugins-rpc  = 2.0.1' \
+		-d 'nagios-plugins-tcp  = 2.0.1' \
+		-d 'net-snmp = 1:5.7.2' \
+		-d 'net-snmp-utils = 1:5.7.2' \
+		-d 'net-tools = 2.0' \
+		-d 'nmap = 2:6.40' \
+		-d 'openssl >= 1.0.1e' \
+		-d 'patch = 2.7.1'\
+		-d 'perl-Digest-MD5 = 2.52' \
+		-d 'perl-Time-HiRes = 4:1.9725' \
+		-d 'python = 2.7.5' \
+		-d 'python-kerberos = 1.1' \
+		-d 'rabbitmq-server = 3.3.5' \
+		-d 'redis = 2.8.14'\
 		-d sysstat \
-		-d 'sudo >= 1.7.0' \
-		-d supervisor \
-		-d tar \
-		-d wget \
+		-d 'supervisor = 3.0' \
 		-a $(PLATFORM) \
 		-m '$(MAINTAINER)' \
 		--iteration $(ITERATION) \

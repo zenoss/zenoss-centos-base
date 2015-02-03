@@ -11,28 +11,23 @@ yum install epel-release -y && \
 
 rpmdb --rebuilddb && \
 yum install -y \
-    vim \
-    which \
-    gzip \
-    tar \
-    wget \
-    traceroute \
-    zip \
+    emacs-nox \
     file \
-    vim \
+    gzip \
+    rsync \
+    tar \
     telnet \
+    traceroute \
+    vim \
+    wget \
+    which \
+    zip \
+    sudo>=1.8.6 \
     openssh-clients \
-    memcached \
-    MySQL-python \
     binutils \
     device-mapper-libs \
     libaio \
     libgomp \
-    libpcre \
-    libssl \
-    libutil \
-    libz \
-    net-snmp \
     openssl-devel \
     pcre-devel \
     protobuf-python \
@@ -42,30 +37,16 @@ yum install -y \
     bind-utils \
     flac-libs \
     gsm \
-    java-1.7.0-openjdk \
-    javapackages-tools \
-    jline \
-    jpackage-utils \
-    libXtst \
     libart_lgpl \
     libasyncns \
-    libgcj \
     libogg \
     libsndfile \
     libtirpc \
     libvorbis \
-    nagios-common \
-    nagios-plugins-perl \
-    perl-Digest-MD5 \  #for percona
-    perl-Time-HiRes \  #for percona
-    pulseaudio-libs \
-    rhino \
     rpcbind \
     ttmkfdir \
     tzdata-java \
-    xorg-x11-fonts-Type1 \
-    salt-master \
-    salt-minion && \
+    xorg-x11-fonts-Type1 && \
 yum erase epel-release -y && \
 yum clean all
 
@@ -76,6 +57,12 @@ RUN rm -f /etc/localtime && ln -s /usr/share/zoneinfo/UTC /etc/localtime
 RUN ln -s /lib64/libdevmapper.so.1.02 /lib64/libdevmapper.so.1.02.1
 
 ADD ./rpm/pkgroot/%RPM% /tmp/%RPM%
-RUN rpmdb --rebuilddb && yum -y localinstall /tmp/%RPM%
+
+RUN yum install epel-release -y && \
+rpmdb --rebuilddb && \
+yum -y install /tmp/%RPM% && \
+yum erase epel-release -y && \
+yum clean all
+
 
 RUN rm -rf /tmp/*
