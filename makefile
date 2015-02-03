@@ -8,6 +8,7 @@ ITERATION ?= 1
 PLATFORM = x86_64
 RPM =  $(NAME)-$(VERSION)-$(ITERATION).$(PLATFORM).rpm
 
+default: build
 
 # Clean staged files and produced packages
 .PHONY: clean
@@ -20,7 +21,7 @@ mrclean: clean
 # Make an RPM
 .PHONY: rpm
 rpm: 
-	cd rpm && make rpm VERSION=$(VERSION) NAME=$(NAME) ITERATION=$(ITERATION) PLATFORM=$(PLATFORM)
+	cd rpm && make rpm VERSION=$(VERSION) NAME=$(NAME) ITERATION=$(ITERATION) PLATFORM=$(PLATFORM) RPM=$(RPM)
 
 Dockerfile: 
 	sed -e 's/%RPM%/$(RPM)/g' Dockerfile.in > Dockerfile

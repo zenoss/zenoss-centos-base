@@ -42,8 +42,11 @@ $(PKGROOT):
 image:
 	docker build -t zenoss-fpm .
 
+rpm: image $(PKGROOT)/$(RPM)
+
 # Make an RPM
-rpm: image 
+.PHONY: $(PGKROOT)/$(RPM)
+$(PKGROOT)/$(RPM): 
 	docker run -v ${PWD}/$(PKGROOT):/pkg -it --rm zenoss-fpm bash -c "fpm \
 		--verbose \
 		-t rpm \
