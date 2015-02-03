@@ -91,7 +91,7 @@ $(PKGROOT)/$(RPM):
 		-d 'redis = 2.8.14'\
 		-d 'rsync' \
 		-d sysstat \
-		-d 'sudo >= 1.8.6'
+		-d 'sudo >= 1.8.6' \
 		-d 'supervisor = 3.0' \
 		-d 'tar' \
 		-d 'wget' \
