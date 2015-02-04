@@ -3,6 +3,7 @@
 #
 
 NAME    ?= zenoss-centos-deps
+IMAGENAME = zenoss-centos-base
 VERSION ?= 1.0.0
 ITERATION ?= 1
 PLATFORM = x86_64
@@ -29,5 +30,5 @@ Dockerfile:
 
 # Make image for building RPM
 build: rpm Dockerfile
-	docker build -t $(NAME):$(VERSION) .
+	docker build -t $(IMAGENAME):$(VERSION) .
 
