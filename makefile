@@ -2,7 +2,7 @@
 # RPM builder for Zenoss base depenencies
 #
 
-NAME    ?= zenoss-deps
+NAME    ?= zenoss-centos-deps
 VERSION ?= 1.0.0
 ITERATION ?= 1
 PLATFORM = x86_64
@@ -13,7 +13,7 @@ default: build
 # Clean staged files and produced packages
 .PHONY: clean
 clean: 
-	rm -f Dockerfile && cd rpm && make clean
+	rm -f Dockerfile && (cd rpm && make clean)
 
 .PHONY: mrclean
 mrclean: clean
@@ -29,5 +29,5 @@ Dockerfile:
 
 # Make image for building RPM
 build: rpm Dockerfile
-	docker build -t zenoss-deps:$(VERSION) .
+	docker build -t $(NAME):$(VERSION) .
 
