@@ -3,6 +3,20 @@ MAINTAINER Zenoss <dev@zenoss.com>
 
 RUN yum clean all
 
+# Add application users/groups
+RUN groupadd        -g 1201         -r epmd && \
+    useradd -u 1201 -g epmd         -r epmd         -d /tmp -s /sbin/nologin -c "Erlang Port Mapper Daemon" && \
+    groupadd        -g 1202         -r nagios && \
+    useradd -u 1202 -g nagios       -r nagios       -d /var/spool/nagios -s /sbin/nologin && \
+    groupadd        -g 1203         -r rabbitmq && \
+    useradd -u 1203 -g rabbitmq     -r rabbitmq     -d /var/lib/rabbitmq -c "RabbitMQ messaging server" && \
+    groupadd        -g 1204         -r redis && \
+    useradd -u 1204 -g redis        -r redis        -d /var/lib/redis -s /sbin/nologin -c "Redis Database Server" && \
+    groupadd        -g 1205         -r memcached && \
+    useradd -u 1205 -g memcached    -r memcached    -d /run/memcached -s /sbin/nologin -c "Memcached daemon" && \
+    groupadd        -g 1206         -r zenoss
+
+
 # Add zenoss tools
 RUN yum --exclude=systemd\* --exclude=iputils\* update -y && \
 
