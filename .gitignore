@@ -1,10 +1,6 @@
 *~
-src
-buildroot
-services/repos/zenoss5x/Dockerfile
-devimg/Dockerfile
-*.py[cod]
-output/
+rpm/pkgroot
+Dockerfile
 
 # OSX
 .DS_Store
