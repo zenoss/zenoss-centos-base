@@ -1,6 +1,6 @@
 *~
 zenoss-centos-base/rpm/pkgroot
-Dockerfile
+zenoss-centos-base/Dockerfile
 
 # OSX
 .DS_Store
