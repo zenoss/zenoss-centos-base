@@ -1,5 +1,5 @@
 *~
-rpm/pkgroot
+zenoss-centos-base/rpm/pkgroot
 Dockerfile
 
 # OSX
