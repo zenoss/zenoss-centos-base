@@ -1,7 +1,5 @@
-FROM centos:centos7
+FROM zenoss/centos-base:1.0.0
 MAINTAINER Zenoss <dev@zenoss.com>
-
-RUN yum clean all
 
 # Add application users/groups
 RUN groupadd        -g 1201         -r epmd && \
@@ -17,34 +15,22 @@ RUN groupadd        -g 1201         -r epmd && \
     groupadd        -g 1206         -r zenoss
 
 
-# Add zenoss tools
-RUN yum --exclude=systemd\* --exclude=iputils\* update -y && \
-
 # TODO: change this repo to use zenoss yum repo
-yum install epel-release -y && \
-
-rpmdb --rebuilddb && \
-yum install -y \
-    emacs-nox \
-    file \
-    telnet \
-    traceroute \
-    vim \
-    which \
-    zip \
-    openssh-clients \
-    binutils \
-    device-mapper-libs \
-    libaio \
-    libgomp \
-    openssl-devel \
-    pcre-devel \
-    protobuf-python \
-    libart_lgpl \
-    libasyncns \
-    xorg-x11-fonts-Type1 && \
-yum erase epel-release -y && \
-yum clean all
+RUN yum install epel-release -y && \
+    yum install -y \
+        device-mapper-libs \
+        libaio \
+        libgomp \
+        openssl-devel \
+        pcre-devel \
+        protobuf-python \
+        libart_lgpl \
+        libasyncns \
+        xorg-x11-fonts-Type1 \
+        /tmp/%RPM% && \
+    yum erase epel-release -y && \
+    yum clean all && \
+    rm -rf /tmp/*
 
 # Symlink /etc/localtime
 RUN rm -f /etc/localtime && ln -s /usr/share/zoneinfo/UTC /etc/localtime
@@ -53,12 +39,9 @@ RUN rm -f /etc/localtime && ln -s /usr/share/zoneinfo/UTC /etc/localtime
 RUN ln -s /lib64/libdevmapper.so.1.02 /lib64/libdevmapper.so.1.02.1
 
 ADD ./rpm/pkgroot/%RPM% /tmp/%RPM%
-
 RUN yum install epel-release -y && \
-rpmdb --rebuilddb && \
-yum -y install /tmp/%RPM% && \
-yum erase epel-release -y && \
-yum clean all
-
-
-RUN rm -rf /tmp/*
+    yum install -y \
+        /tmp/%RPM% && \
+    yum erase epel-release -y && \
+    yum clean all && \
+    rm -rf /tmp/*

@@ -4,7 +4,7 @@
 
 NAME    ?= zenoss-centos-deps
 IMAGENAME = zenoss-centos-base
-VERSION ?= 1.1.0-dev
+VERSION ?= 1.1.0_dev
 ITERATION ?= 1
 PLATFORM = x86_64
 RPM =  $(NAME)-$(VERSION)-$(ITERATION).$(PLATFORM).rpm
@@ -20,8 +20,7 @@ clean:
 mrclean: clean
 
 # Make an RPM
-.PHONY: rpm
-rpm: 
+rpm/pkgroot/$(RPM):
 	cd rpm && make rpm VERSION=$(VERSION) NAME=$(NAME) ITERATION=$(ITERATION) PLATFORM=$(PLATFORM) RPM=$(RPM)
 
 Dockerfile: 
@@ -29,6 +28,6 @@ Dockerfile:
 
 
 # Make image for building RPM
-build: rpm Dockerfile
+build: rpm/pkgroot/$(RPM) Dockerfile
 	docker build -t $(IMAGENAME):$(VERSION) .
 
