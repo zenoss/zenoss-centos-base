@@ -1,6 +1,6 @@
 IMAGENAME  = centos-base
-VERSION   ?= 1.0.0
+VERSION   ?= 1.0.1
 
 .PHONY: build
 build:
-	docker build -t zenoss/$(IMAGENAME):$(VERSION) .
+	docker export $$(docker run -d $$(docker build -q -t foo . 2>/dev/null | awk '/Successfully built/{print $$NF}') echo) | docker import - zenoss/$(IMAGENAME):$(VERSION)
