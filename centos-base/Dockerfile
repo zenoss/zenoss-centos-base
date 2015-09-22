@@ -11,7 +11,7 @@ RUN yum --setopt=tsflags="nodocs" --exclude=systemd\* --exclude=iputils\* update
 
 # Install some useful tools
 RUN yum install -y --setopt=tsflags="nodocs" \
-        vim                                  \
+        vim-minimal                          \
         file                                 \
         binutils                             \
         telnet                               \
@@ -50,3 +50,6 @@ RUN wget -q https://raw.githubusercontent.com/phusion/baseimage-docker/master/im
 # Install jq to work with JSON
 RUN wget -q https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -O /usr/bin/jq && \
     chmod a+x /usr/bin/jq
+
+# Add symlink for vim
+RUN ln -s /usr/bin/vi /usr/bin/vim
