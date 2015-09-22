@@ -11,7 +11,7 @@ RUN yum --setopt=tsflags="nodocs" --exclude=systemd\* --exclude=iputils\* update
 
 # Install some useful tools
 RUN yum install -y --setopt=tsflags="nodocs" \
-        vim-minimal                          \
+        vim                                  \
         file                                 \
         binutils                             \
         telnet                               \
@@ -39,7 +39,7 @@ RUN yum install -y --setopt=tsflags="nodocs" \
 
 # Install Python utilities
 RUN wget -qO- https://bootstrap.pypa.io/get-pip.py | python; \
-    pip install --no-cache-dir httpie \
+    pip install --no-cache-dir httpie supervisor \
     && /sbin/scrub.sh
 
 # Install setuser script
