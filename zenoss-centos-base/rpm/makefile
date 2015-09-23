@@ -59,7 +59,7 @@ $(PKGROOT)/$(RPM):
 		-d 'dmidecode = 1:2.12' \
 		-d 'gzip' \
 		-d 'hiredis = 0.12.1' \
-		-d 'java-1.7.0-openjdk-headless = 1:1.7.0.75' \
+		-d 'java-1.7.0-openjdk-headless = 1:1.7.0.85' \
 		-d 'krb5-workstation = 1.12.2' \
 		-d 'libsmi = 0.4.8' \
 		-d 'mariadb-server = 1:5.5.44' \
