@@ -1,4 +1,4 @@
-FROM zenoss/centos-base:1.0.1
+FROM zenoss/centos-base:1.0.1-java
 MAINTAINER Zenoss <dev@zenoss.com>
 
 # Add application users/groups
@@ -43,3 +43,6 @@ RUN yum install epel-release -y && \
         /tmp/%RPM% && \
     yum erase epel-release -y && \
     /sbin/scrub.sh
+
+RUN echo -e "NODENAME=rabbit@rbt0\nNODE_IP_ADDRESS=0.0.0.0" > /etc/rabbitmq/rabbitmq-env.conf
+ADD my.cnf /etc/my.cnf
