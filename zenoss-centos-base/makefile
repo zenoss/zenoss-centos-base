@@ -4,7 +4,7 @@
 
 NAME    ?= zenoss-centos-deps
 IMAGENAME = zenoss-centos-base
-VERSION ?= 1.1.0_dev
+VERSION ?= 1.1.3_dev
 ITERATION ?= 1
 PLATFORM = x86_64
 RPM =  $(NAME)-$(VERSION)-$(ITERATION).$(PLATFORM).rpm
