@@ -35,6 +35,10 @@ RUN yum install -y --setopt=tsflags="nodocs" \
         unzip                                \
         sysstat                              \
         tmux                                 \
+        which                                \
+        iproute                              \
+        file                                 \
+        less                                 \
     && /sbin/scrub.sh
 
 # Install Python utilities
