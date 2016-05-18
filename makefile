@@ -16,9 +16,6 @@ default: build
 clean: 
 	rm -f Dockerfile && (cd rpm && make clean)
 
-.PHONY: mrclean
-mrclean: clean
-
 # Make an RPM
 rpm/pkgroot/$(RPM):
 	cd rpm && make rpm VERSION=$(VERSION) NAME=$(NAME) ITERATION=$(ITERATION) PLATFORM=$(PLATFORM) RPM=$(RPM)
@@ -31,3 +28,5 @@ Dockerfile:
 build: rpm/pkgroot/$(RPM) Dockerfile
 	docker build -t $(IMAGENAME):$(VERSION) .
 
+push:
+	docker push $(IMAGENAME):$(VERSION)
