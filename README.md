@@ -1,7 +1,6 @@
 # zenoss-centos-base
 
 CentOS 7 base images for Zenoss-related applications.
-=======
 
 Base docker centos image for Zenoss. Image is based on the `zenoss/centos-base` image with the JVM installed.
 
