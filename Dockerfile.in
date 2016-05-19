@@ -21,8 +21,6 @@ RUN groupadd        -g 1201         -r epmd && \
 # TODO: change this repo to use zenoss yum repo
 RUN yum install epel-release -y && \
     yum install -y  --setopt=tsflags="nodocs" \
-        python-pip \
-        python-wheel	\
         patch \
         device-mapper-libs \
         libaio \
@@ -42,6 +40,12 @@ RUN rm -f /etc/localtime && ln -s /usr/share/zoneinfo/UTC /etc/localtime
 # Creating sym link to remedy library import of serviced
 RUN ln -s /lib64/libdevmapper.so.1.02 /lib64/libdevmapper.so.1.02.1
 
+# Install Solr
+RUN mkdir -p /opt/solr && \
+    wget -qO- http://archive.apache.org/dist/lucene/solr/5.5.0/solr-5.5.0.tgz | tar -C /opt/solr -xz --strip-components=1 && \
+    mkdir -p /opt/solr/server/solr/lib && \
+    chown -R solr:solr /opt/solr
+
 ADD ./rpm/pkgroot/%RPM% /tmp/%RPM%
 RUN yum install epel-release -y && \
     yum install -y \
@@ -51,23 +55,12 @@ RUN yum install epel-release -y && \
 
 RUN echo -e "NODENAME=rabbit@rbt0\nNODE_IP_ADDRESS=0.0.0.0" > /etc/rabbitmq/rabbitmq-env.conf
 
-# Install Solr
-RUN mkdir -p /opt/solr && \
-    wget -qO- http://archive.apache.org/dist/lucene/solr/5.5.0/solr-5.5.0.tgz | tar -C /opt/solr -xz --strip-components=1 && \
-    mkdir -p /opt/solr/server/solr/lib && \
-    chown -R solr:solr /opt/solr
-
-
-# setup zenoss python and venv
-# Pin PIP to 8.1.1 because 8.1.2 has a problem with .'s and -'s preventing
-# it from pulling from our zenpip.
+# setup zenoss python virtualenv
 RUN pip install virtualenv && \
     mkdir -p /opt/zenoss && \
     chown zenoss:zenoss /opt/zenoss && \
     su - zenoss -c 'virtualenv /opt/zenoss && \
-    virtualenv --relocatable /opt/zenoss && \
-    source /opt/zenoss/bin/activate && \
-    pip install --upgrade pip==8.1.1' && \
+    virtualenv --relocatable /opt/zenoss' && \
     /sbin/scrub.sh
 
 RUN cd /tmp && \
