@@ -59,10 +59,9 @@ $(PKGROOT)/$(RPM):
 		-d 'dmidecode = 1:2.12' \
 		-d 'gzip' \
 		-d 'hiredis = 0.12.1' \
-		-d 'java-1.7.0-openjdk-headless = 1:1.7.0.91' \
 		-d 'krb5-workstation = 1.13.2' \
 		-d 'libsmi = 0.4.8' \
-		-d 'mariadb-server = 1:5.5.44' \
+		-d 'mariadb-server = 1:5.5.47' \
 		-d 'memcached = 1.4.15' \
 		-d 'MySQL-python = 1.2.3' \
 		-d 'nagios-common = 4.0.8' \

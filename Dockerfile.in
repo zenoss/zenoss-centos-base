@@ -14,12 +14,14 @@ RUN groupadd        -g 1201         -r epmd && \
     useradd -u 1205 -g memcached    -r memcached    -d /run/memcached -s /sbin/nologin -c "Memcached daemon" && \
     groupadd        -g 1207         -r solr && \
     useradd -u 1207 -g solr         -r solr         -d /opt/solr -s /sbin/nologin -c "Solr" && \
-    groupadd        -g 1206         -r zenoss
+    groupadd        -g 1206         -r zenoss && \
+    useradd -u 1337 -g zenoss       zenoss          -c "Zenoss Account"
 
 
 # TODO: change this repo to use zenoss yum repo
 RUN yum install epel-release -y && \
-    yum install -y \
+    yum install -y  --setopt=tsflags="nodocs" \
+        patch \
         device-mapper-libs \
         libaio \
         libgomp \
@@ -28,8 +30,7 @@ RUN yum install epel-release -y && \
         protobuf-python \
         libart_lgpl \
         libasyncns \
-        xorg-x11-fonts-Type1 \
-        /tmp/%RPM% && \
+        xorg-x11-fonts-Type1 && \
     yum erase epel-release -y && \
     /sbin/scrub.sh
 
@@ -53,4 +54,22 @@ RUN yum install epel-release -y && \
     /sbin/scrub.sh
 
 RUN echo -e "NODENAME=rabbit@rbt0\nNODE_IP_ADDRESS=0.0.0.0" > /etc/rabbitmq/rabbitmq-env.conf
+
+# setup zenoss python virtualenv
+RUN pip install virtualenv && \
+    mkdir -p /opt/zenoss && \
+    chown zenoss:zenoss /opt/zenoss && \
+    su - zenoss -c 'virtualenv /opt/zenoss && \
+    virtualenv --relocatable /opt/zenoss' && \
+    /sbin/scrub.sh
+
+RUN cd /tmp && \
+    wget -qO- http://zenpip.zendev.org/packages/%PYDEPS%.tar.gz | tar xz && \
+    su - zenoss -c 'source /opt/zenoss/bin/activate && \
+    pip install --use-wheel --no-index --find-links=/tmp/%PYDEPS%/wheelhouse -r /tmp/%PYDEPS%/requirements.txt wheel && \
+    cd /tmp/%PYDEPS%/ && \
+    cat patches/* | patch -d $(python -c "import pip, os.path; print os.path.dirname(pip.__path__[0])") -p0 ' && \
+    /sbin/scrub.sh
+
 ADD my.cnf /etc/my.cnf
+    
