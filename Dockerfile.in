@@ -1,4 +1,4 @@
-FROM zenoss/centos-base:1.0.2-java
+FROM zenoss/centos-base:1.0.3-dev-java
 MAINTAINER Zenoss <dev@zenoss.com>
 
 # Add application users/groups
@@ -56,9 +56,9 @@ RUN yum install epel-release -y && \
 RUN echo -e "NODENAME=rabbit@rbt0\nNODE_IP_ADDRESS=0.0.0.0" > /etc/rabbitmq/rabbitmq-env.conf
 
 # setup zenoss python virtualenv
-RUN pip install virtualenv && \
-    mkdir -p /opt/zenoss && \
+RUN mkdir -p /opt/zenoss && \
     chown zenoss:zenoss /opt/zenoss && \
+    pip install virtualenv && \
     su - zenoss -c 'virtualenv /opt/zenoss && \
     virtualenv --relocatable /opt/zenoss' && \
     /sbin/scrub.sh
