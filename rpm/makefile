@@ -47,7 +47,7 @@ rpm: image $(PKGROOT)/$(RPM)
 # Make an RPM
 .PHONY: $(PGKROOT)/$(RPM)
 $(PKGROOT)/$(RPM): 
-	docker run -v ${PWD}/$(PKGROOT):/pkg -it --rm zenoss-fpm bash -c "fpm \
+	docker run -v "${PWD}/$(PKGROOT):/pkg" -i --rm zenoss-fpm bash -c "fpm \
 		--verbose \
 		-t rpm \
 		-s dir \

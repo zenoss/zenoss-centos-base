@@ -1,4 +1,4 @@
-FROM zenoss/centos-base:1.0.3-dev-java
+FROM zenoss/centos-base:1.0.3-java
 MAINTAINER Zenoss <dev@zenoss.com>
 
 # Add application users/groups
@@ -72,4 +72,4 @@ RUN cd /tmp && \
     /sbin/scrub.sh
 
 ADD my.cnf /etc/my.cnf
-    
+
