@@ -47,7 +47,7 @@ rpm: image $(PKGROOT)/$(RPM)
 # Make an RPM
 .PHONY: $(PGKROOT)/$(RPM)
 $(PKGROOT)/$(RPM): 
-	docker run -v ${PWD}/$(PKGROOT):/pkg -it --rm zenoss-fpm bash -c "fpm \
+	docker run -v "${PWD}/$(PKGROOT):/pkg" -i --rm zenoss-fpm bash -c "fpm \
 		--verbose \
 		-t rpm \
 		-s dir \
@@ -58,25 +58,24 @@ $(PKGROOT)/$(RPM):
 		-d 'shadow-utils = 2:4.1.5.1' \
 		-d 'dmidecode = 1:2.12' \
 		-d 'gzip' \
-		-d 'hiredis = 0.11.0' \
-		-d 'java-1.7.0-openjdk-headless = 1:1.7.0.75' \
-		-d 'krb5-workstation = 1.11.3' \
+		-d 'hiredis = 0.12.1' \
+		-d 'krb5-workstation = 1.13.2' \
 		-d 'libsmi = 0.4.8' \
-		-d 'mariadb-server = 1:5.5.40' \
+		-d 'mariadb-server = 1:5.5.47' \
 		-d 'memcached = 1.4.15' \
 		-d 'MySQL-python = 1.2.3' \
-		-d 'nagios-common = 3.5.1' \
-		-d 'nagios-plugins = 2.0.1' \
-		-d 'nagios-plugins-perl = 2.0.1' \
-		-d 'nagios-plugins-dig  = 2.0.1' \
-		-d 'nagios-plugins-dns  = 2.0.1' \
-		-d 'nagios-plugins-http = 2.0.1' \
-		-d 'nagios-plugins-ircd = 2.0.1' \
-		-d 'nagios-plugins-ldap = 2.0.1' \
-		-d 'nagios-plugins-ntp  = 2.0.1' \
-		-d 'nagios-plugins-ping = 2.0.1' \
-		-d 'nagios-plugins-rpc  = 2.0.1' \
-		-d 'nagios-plugins-tcp  = 2.0.1' \
+		-d 'nagios-common = 4.0.8' \
+		-d 'nagios-plugins = 2.0.3' \
+		-d 'nagios-plugins-perl = 2.0.3' \
+		-d 'nagios-plugins-dig  = 2.0.3' \
+		-d 'nagios-plugins-dns  = 2.0.3' \
+		-d 'nagios-plugins-http = 2.0.3' \
+		-d 'nagios-plugins-ircd = 2.0.3' \
+		-d 'nagios-plugins-ldap = 2.0.3' \
+		-d 'nagios-plugins-ntp  = 2.0.3' \
+		-d 'nagios-plugins-ping = 2.0.3' \
+		-d 'nagios-plugins-rpc  = 2.0.3' \
+		-d 'nagios-plugins-tcp  = 2.0.3' \
 		-d 'net-snmp = 1:5.7.2' \
 		-d 'net-snmp-utils = 1:5.7.2' \
 		-d 'net-tools = 2.0' \
@@ -88,11 +87,11 @@ $(PKGROOT)/$(RPM):
 		-d 'python = 2.7.5' \
 		-d 'python-kerberos = 1.1' \
 		-d 'rabbitmq-server = 3.3.5' \
-		-d 'redis = 2.8.14'\
+		-d 'redis = 2.8.19'\
 		-d 'rsync' \
 		-d sysstat \
 		-d 'sudo >= 1.8.6' \
-		-d 'supervisor = 3.0' \
+		-d 'supervisor = 3.1.3' \
 		-d 'tar' \
 		-d 'wget' \
 		-a $(PLATFORM) \

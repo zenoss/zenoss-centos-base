@@ -5,12 +5,9 @@
 #
 
 # Pull base image.
-FROM dockerfile/fpm
-
-# Install FPM.
-
-RUN apt-get update -q
-RUN apt-get install -y -q rpm
+FROM ruby
+RUN gem install fpm
+RUN apt-get update && apt-get install -y rpm && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Define working directory.
 WORKDIR /data
