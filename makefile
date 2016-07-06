@@ -19,7 +19,8 @@ clean:
 	-docker rmi $(TAG)
 	rm -f Dockerfile && (cd rpm && make clean)
 
-# Make an RPM
+# Make an RPM so that downstream attempts to override packages for this image will trigger
+# version dependency warnings from yum/rpm
 rpm/pkgroot/$(RPM):
 	cd rpm && make rpm VERSION=$(VERSION) NAME=$(NAME) ITERATION=$(ITERATION) PLATFORM=$(PLATFORM) RPM=$(RPM)
 
@@ -39,7 +40,7 @@ verifyVersion:
 
 # Generate a make failure if the image(s) already exist
 verifyImage:
-	@./verifyImage.sh $(TAG)
+	@./verifyImage.sh zenoss/$(IMAGENAME) $(VERSION)
 
 # Do not release if the image version is invalid
 # This target is intended for use when trying to build/publish images from the master branch
