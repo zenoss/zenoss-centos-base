@@ -33,6 +33,10 @@ build: rpm/pkgroot/$(RPM) Dockerfile
 push:
 	docker push $(TAG)
 
+# Generate a make failure if the VERSION string contains "-<some letters>"
+verifyVersion:
+	@./verifyVersion.sh $(VERSION)
+
 # Generate a make failure if the image(s) already exist
 verifyImage:
 	@./verifyImage.sh $(TAG)
