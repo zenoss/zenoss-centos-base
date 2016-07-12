@@ -4,11 +4,12 @@
 
 NAME    ?= zenoss-centos-deps
 IMAGENAME = zenoss-centos-base
-VERSION ?= 1.1.5-dev
+VERSION ?= 1.2.0-dev
 TAG = zenoss/$(IMAGENAME):$(VERSION)
 ITERATION ?= 1
 PLATFORM = x86_64
-RPM =  $(NAME)-$(VERSION)-$(ITERATION).$(PLATFORM).rpm
+RPMVERSION := $(subst -,_,$(VERSION))
+RPM =  $(NAME)-$(RPMVERSION)-$(ITERATION).$(PLATFORM).rpm
 PYDEPS = pydeps-5.2.0-el7-2
 
 default: build
