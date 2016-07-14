@@ -71,5 +71,13 @@ RUN cd /tmp && \
     cat patches/* | patch -d $(python -c "import pip, os.path; print os.path.dirname(pip.__path__[0])") -p0 ' && \
     /sbin/scrub.sh
 
+RUN cd /tmp && \
+    wget -q http://zenpip.zendev.org/packages/%JSBUILDER%.zip -O /tmp/JSBuilder.zip && \
+    unzip -d /tmp/JSBuilder JSBuilder.zip && \
+    su - zenoss -c 'mkdir -p /opt/zenoss/share/java/sencha_jsbuilder-2 && \
+    cp /tmp/JSBuilder/*.jar /opt/zenoss/share/java/sencha_jsbuilder-2 && \
+    cp /tmp/JSBuilder/Readme.txt /opt/zenoss/share/java/sencha_jsbuilder-2' && \
+    /sbin/scrub.sh
+
 ADD my.cnf /etc/my.cnf
 

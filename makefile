@@ -11,6 +11,7 @@ PLATFORM = x86_64
 RPMVERSION := $(subst -,_,$(VERSION))
 RPM =  $(NAME)-$(RPMVERSION)-$(ITERATION).$(PLATFORM).rpm
 PYDEPS = pydeps-5.2.0-el7-2
+JSBUILDER = JSBuilder2
 
 default: build
 
@@ -26,7 +27,7 @@ rpm/pkgroot/$(RPM):
 	cd rpm && make rpm VERSION=$(VERSION) NAME=$(NAME) ITERATION=$(ITERATION) PLATFORM=$(PLATFORM) RPM=$(RPM)
 
 Dockerfile:
-	sed -e 's/%PYDEPS%/$(PYDEPS)/g' -e 's/%RPM%/$(RPM)/g' Dockerfile.in > Dockerfile
+	sed -e 's/%PYDEPS%/$(PYDEPS)/g' -e 's/%RPM%/$(RPM)/g' -e 's/%JSBUILDER%/$(JSBUILDER)/g' Dockerfile.in > Dockerfile
 
 # Make image for building RPM
 build: rpm/pkgroot/$(RPM) Dockerfile
