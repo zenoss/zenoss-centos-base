@@ -21,7 +21,6 @@ useradd -u 1337 -g zenoss       zenoss          -c "Zenoss Account"
 
 
 # TODO: change this repo to use zenoss yum repo
-yum install epel-release -y 
 yum install -y  --setopt=tsflags="nodocs" \
     patch \
     device-mapper-libs \
@@ -33,6 +32,9 @@ yum install -y  --setopt=tsflags="nodocs" \
     libart_lgpl \
     libasyncns \
     xorg-x11-fonts-Type1 
+
+# only instal epel here to prevent accidental installs from epel
+yum install epel-release -y 
 
 yum install -y  /tmp/%RPM% 
 
@@ -51,14 +53,6 @@ wget -qO- http://archive.apache.org/dist/lucene/solr/5.5.0/solr-5.5.0.tgz | tar 
 mkdir -p /opt/solr/server/solr/lib 
 chown -R solr:solr /opt/solr
 
-echo "Installing jsbuilder..."
-cd /tmp
-wget -q http://zenpip.zendev.org/packages/%JSBUILDER%.zip -O /tmp/JSBuilder.zip
-unzip -d /tmp/JSBuilder JSBuilder.zip
-su - zenoss -c 'mkdir -p /opt/zenoss/share/java/sencha_jsbuilder-2 &&  \
-    cp /tmp/JSBuilder/*.jar /opt/zenoss/share/java/sencha_jsbuilder-2 && \
-    cp /tmp/JSBuilder/Readme.txt /opt/zenoss/share/java/sencha_jsbuilder-2'
-
 echo -e "NODENAME=rabbit@rbt0\nNODE_IP_ADDRESS=0.0.0.0" > /etc/rabbitmq/rabbitmq-env.conf
 
 # setup zenoss python virtualenv
@@ -74,11 +68,24 @@ su - zenoss -c 'source /opt/zenoss/bin/activate && \
     cd /tmp/%PYDEPS%/ && \
     cat patches/* | patch -d $(python -c "import pip, os.path; print os.path.dirname(pip.__path__[0])") -p0 ' 
 
+echo "Installing jsbuilder..."
+cd /tmp
+wget -q http://zenpip.zendev.org/packages/%JSBUILDER%.zip -O /tmp/JSBuilder.zip
+unzip -d /tmp/JSBuilder JSBuilder.zip
+su - zenoss -c 'mkdir -p /opt/zenoss/share/java/sencha_jsbuilder-2 &&  \
+    cp /tmp/JSBuilder/*.jar /opt/zenoss/share/java/sencha_jsbuilder-2 && \
+    cp /tmp/JSBuilder/Readme.txt /opt/zenoss/share/java/sencha_jsbuilder-2'
+
+
+
 cat <<EOF>> /home/zenoss/.bashrc
 export ZENHOME=/opt/zenoss
 source /opt/zenoss/bin/activate
 export PYTHONPATH=/opt/zenoss/lib/python
 export PATH=/opt/zenoss/bin:/opt/zenoss/var/ext/bin:$PATH
 EOF
+
+echo "Deleting pyc and pyo files..."
+find /opt/zenoss -name \*.py[co] -delete
 
 /sbin/scrub.sh
