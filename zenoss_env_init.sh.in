@@ -1,7 +1,7 @@
 #!/bin/sh
 
 set -e
-set -x 
+set -x
 
 # Add application users/groups
 groupadd        -g 1201         -r epmd 
@@ -45,12 +45,19 @@ rm -f /etc/localtime && ln -s /usr/share/zoneinfo/UTC /etc/localtime
 ln -s /lib64/libdevmapper.so.1.02 /lib64/libdevmapper.so.1.02.1
 
 # Install Solr
-mkdir -p /opt/solr 
+echo "Installing solr..."mkdir -p /opt/solr 
+mkdir -p /opt/solr
 wget -qO- http://archive.apache.org/dist/lucene/solr/5.5.0/solr-5.5.0.tgz | tar -C /opt/solr -xz --strip-components=1 
 mkdir -p /opt/solr/server/solr/lib 
 chown -R solr:solr /opt/solr
 
-
+echo "Installing jsbuilder..."
+cd /tmp
+wget -q http://zenpip.zendev.org/packages/%JSBUILDER%.zip -O /tmp/JSBuilder.zip
+unzip -d /tmp/JSBuilder JSBuilder.zip
+su - zenoss -c 'mkdir -p /opt/zenoss/share/java/sencha_jsbuilder-2 &&  \
+    cp /tmp/JSBuilder/*.jar /opt/zenoss/share/java/sencha_jsbuilder-2 && \
+    cp /tmp/JSBuilder/Readme.txt /opt/zenoss/share/java/sencha_jsbuilder-2'
 
 echo -e "NODENAME=rabbit@rbt0\nNODE_IP_ADDRESS=0.0.0.0" > /etc/rabbitmq/rabbitmq-env.conf
 
@@ -68,10 +75,10 @@ su - zenoss -c 'source /opt/zenoss/bin/activate && \
     cat patches/* | patch -d $(python -c "import pip, os.path; print os.path.dirname(pip.__path__[0])") -p0 ' 
 
 cat <<EOF>> /home/zenoss/.bashrc
-export ZENHOME=$ZENHOME
-source $ZENHOME/bin/activate
+export ZENHOME=/opt/zenoss
+source /opt/zenoss/bin/activate
 export PYTHONPATH=/opt/zenoss/lib/python
-export PATH=${ZENHOME}/bin:${ZENHOME}/var/ext/bin:$PATH
+export PATH=/opt/zenoss/bin:/opt/zenoss/var/ext/bin:$PATH
 EOF
 
 /sbin/scrub.sh
