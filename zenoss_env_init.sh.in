@@ -1,0 +1,91 @@
+#!/bin/sh
+
+set -e
+set -x
+
+# Add application users/groups
+groupadd        -g 1201         -r epmd 
+useradd -u 1201 -g epmd         -r epmd         -d /tmp -s /sbin/nologin -c "Erlang Port Mapper Daemon" 
+groupadd        -g 1202         -r nagios 
+useradd -u 1202 -g nagios       -r nagios       -d /var/spool/nagios -s /sbin/nologin 
+groupadd        -g 1203         -r rabbitmq 
+useradd -u 1203 -g rabbitmq     -r rabbitmq     -d /var/lib/rabbitmq -c "RabbitMQ messaging server" 
+groupadd        -g 1204         -r redis 
+useradd -u 1204 -g redis        -r redis        -d /var/lib/redis -s /sbin/nologin -c "Redis Database Server" 
+groupadd        -g 1205         -r memcached 
+useradd -u 1205 -g memcached    -r memcached    -d /run/memcached -s /sbin/nologin -c "Memcached daemon" 
+groupadd        -g 1207         -r solr 
+useradd -u 1207 -g solr         -r solr         -d /opt/solr -s /sbin/nologin -c "Solr" 
+groupadd        -g 1206         -r zenoss 
+useradd -u 1337 -g zenoss       zenoss          -c "Zenoss Account"
+
+
+# TODO: change this repo to use zenoss yum repo
+yum install -y  --setopt=tsflags="nodocs" \
+    patch \
+    device-mapper-libs \
+    libaio \
+    libgomp \
+    openssl-devel \
+    pcre-devel \
+    protobuf-python \
+    libart_lgpl \
+    libasyncns \
+    xorg-x11-fonts-Type1 
+
+# only instal epel here to prevent accidental installs from epel
+yum install epel-release -y 
+
+yum install -y  /tmp/%RPM% 
+
+yum erase epel-release -y
+
+# Symlink /etc/localtime
+rm -f /etc/localtime && ln -s /usr/share/zoneinfo/UTC /etc/localtime
+
+# Creating sym link to remedy library import of serviced
+ln -s /lib64/libdevmapper.so.1.02 /lib64/libdevmapper.so.1.02.1
+
+# Install Solr
+echo "Installing solr..."mkdir -p /opt/solr 
+mkdir -p /opt/solr
+wget -qO- http://archive.apache.org/dist/lucene/solr/5.5.0/solr-5.5.0.tgz | tar -C /opt/solr -xz --strip-components=1 
+mkdir -p /opt/solr/server/solr/lib 
+chown -R solr:solr /opt/solr
+
+echo -e "NODENAME=rabbit@rbt0\nNODE_IP_ADDRESS=0.0.0.0" > /etc/rabbitmq/rabbitmq-env.conf
+
+# setup zenoss python virtualenv
+mkdir -p /opt/zenoss
+chown zenoss:zenoss /opt/zenoss
+pip install virtualenv
+su - zenoss -c 'virtualenv /opt/zenoss && virtualenv --relocatable /opt/zenoss' 
+
+cd /tmp 
+wget -qO- http://zenpip.zendev.org/packages/%PYDEPS%.tar.gz | tar xz 
+su - zenoss -c 'source /opt/zenoss/bin/activate && \
+    pip install --use-wheel --no-index --find-links=/tmp/%PYDEPS%/wheelhouse -r /tmp/%PYDEPS%/requirements.txt wheel && \
+    cd /tmp/%PYDEPS%/ && \
+    cat patches/* | patch -d $(python -c "import pip, os.path; print os.path.dirname(pip.__path__[0])") -p0 ' 
+
+echo "Installing jsbuilder..."
+cd /tmp
+wget -q http://zenpip.zendev.org/packages/%JSBUILDER%.zip -O /tmp/JSBuilder.zip
+unzip -d /tmp/JSBuilder JSBuilder.zip
+su - zenoss -c 'mkdir -p /opt/zenoss/share/java/sencha_jsbuilder-2 &&  \
+    cp /tmp/JSBuilder/*.jar /opt/zenoss/share/java/sencha_jsbuilder-2 && \
+    cp /tmp/JSBuilder/Readme.txt /opt/zenoss/share/java/sencha_jsbuilder-2'
+
+
+
+cat <<EOF>> /home/zenoss/.bashrc
+export ZENHOME=/opt/zenoss
+source /opt/zenoss/bin/activate
+export PYTHONPATH=/opt/zenoss/lib/python
+export PATH=/opt/zenoss/bin:/opt/zenoss/var/ext/bin:$PATH
+EOF
+
+echo "Deleting pyc and pyo files..."
+find /opt/zenoss -name \*.py[co] -delete
+
+/sbin/scrub.sh
