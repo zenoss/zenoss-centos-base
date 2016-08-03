@@ -1,6 +1,7 @@
 *~
 rpm/pkgroot
 Dockerfile
+zenoss_env_init.sh
 
 # OSX
 .DS_Store
