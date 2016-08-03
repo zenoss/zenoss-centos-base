@@ -14,8 +14,8 @@ groupadd        -g 1204         -r redis
 useradd -u 1204 -g redis        -r redis        -d /var/lib/redis -s /sbin/nologin -c "Redis Database Server" 
 groupadd        -g 1205         -r memcached 
 useradd -u 1205 -g memcached    -r memcached    -d /run/memcached -s /sbin/nologin -c "Memcached daemon" 
-groupadd        -g 1207         -r solr 
-useradd -u 1207 -g solr         -r solr         -d /opt/solr -s /sbin/nologin -c "Solr" 
+#groupadd        -g 1207         -r solr 
+#useradd -u 1207 -g solr         -r solr         -d /opt/solr -s /sbin/nologin -c "Solr" 
 groupadd        -g 1206         -r zenoss 
 useradd -u 1337 -g zenoss       zenoss          -c "Zenoss Account"
 
@@ -47,11 +47,11 @@ rm -f /etc/localtime && ln -s /usr/share/zoneinfo/UTC /etc/localtime
 ln -s /lib64/libdevmapper.so.1.02 /lib64/libdevmapper.so.1.02.1
 
 # Install Solr
-echo "Installing solr..."mkdir -p /opt/solr 
-mkdir -p /opt/solr
-wget -qO- http://archive.apache.org/dist/lucene/solr/5.5.0/solr-5.5.0.tgz | tar -C /opt/solr -xz --strip-components=1 
-mkdir -p /opt/solr/server/solr/lib 
-chown -R solr:solr /opt/solr
+#echo "Installing solr..."mkdir -p /opt/solr 
+#mkdir -p /opt/solr
+#wget -qO- http://archive.apache.org/dist/lucene/solr/5.5.0/solr-5.5.0.tgz | tar -C /opt/solr -xz --strip-components=1 
+#mkdir -p /opt/solr/server/solr/lib 
+#chown -R solr:solr /opt/solr
 
 echo -e "NODENAME=rabbit@rbt0\nNODE_IP_ADDRESS=0.0.0.0" > /etc/rabbitmq/rabbitmq-env.conf
 

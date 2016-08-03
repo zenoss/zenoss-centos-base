@@ -3,10 +3,9 @@ MAINTAINER Zenoss <dev@zenoss.com>
 
 ADD my.cnf /etc/my.cnf
 
-ADD zenoss_env_init.sh  /tmp/zenoss_env_init.sh
-
 ADD ./rpm/pkgroot/%RPM% /tmp/%RPM%
 
+ADD zenoss_env_init.sh  /tmp/zenoss_env_init.sh
 
 RUN chmod +x /tmp/zenoss_env_init.sh && /tmp/zenoss_env_init.sh
 
