@@ -58,10 +58,11 @@ $(PKGROOT)/$(RPM):
 		-d 'shadow-utils = 2:4.1.5.1' \
 		-d 'dmidecode = 1:2.12' \
 		-d 'gzip' \
+		-d 'bzip2' \
 		-d 'hiredis = 0.12.1' \
 		-d 'krb5-workstation = 1.13.2' \
 		-d 'libsmi = 0.4.8' \
-		-d 'mariadb-server = 1:5.5.47' \
+		-d 'mariadb-server = 1:5.5.50' \
 		-d 'memcached = 1.4.15' \
 		-d 'MySQL-python = 1.2.3' \
 		-d 'nagios-common = 4.0.8' \

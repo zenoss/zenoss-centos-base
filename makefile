@@ -10,8 +10,9 @@ ITERATION ?= 1
 PLATFORM = x86_64
 RPMVERSION := $(subst -,_,$(VERSION))
 RPM =  $(NAME)-$(RPMVERSION)-$(ITERATION).$(PLATFORM).rpm
-PYDEPS = pydeps-5.2.0-el7-6
+PYDEPS = pydeps-5.2.0-el7-7
 JSBUILDER = JSBuilder2
+PHANTOMJS = 1.9.7
 
 
 default: build
@@ -31,7 +32,7 @@ Dockerfile:
 	sed -e 's/%RPM%/$(RPM)/g' Dockerfile.in > Dockerfile
 
 zenoss_env_init.sh:
-	sed -e 's/%PYDEPS%/$(PYDEPS)/g' -e 's/%RPM%/$(RPM)/g' -e 's/%JSBUILDER%/$(JSBUILDER)/g' zenoss_env_init.sh.in > zenoss_env_init.sh
+	sed -e 's/%PYDEPS%/$(PYDEPS)/g' -e 's/%RPM%/$(RPM)/g' -e 's/%JSBUILDER%/$(JSBUILDER)/g' -e 's/%PHANTOMJS%/$(PHANTOMJS)/g'  zenoss_env_init.sh.in > zenoss_env_init.sh
 
 # Make image for building RPM
 build: rpm/pkgroot/$(RPM) Dockerfile zenoss_env_init.sh
