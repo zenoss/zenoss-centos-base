@@ -76,7 +76,11 @@ su - zenoss -c 'mkdir -p /opt/zenoss/share/java/sencha_jsbuilder-2 &&  \
     cp /tmp/JSBuilder/*.jar /opt/zenoss/share/java/sencha_jsbuilder-2 && \
     cp /tmp/JSBuilder/Readme.txt /opt/zenoss/share/java/sencha_jsbuilder-2'
 
-
+echo "Installing phantomjs..."
+cd /tmp
+wget http://zenpip.zendev.org/packages/phantomjs-%PHANTOMJS%-linux-x86_64.tar.bz2
+su zenoss -c 'tar jxf phantomjs*tar.bz2'
+su zenoss -c 'cp /tmp/phantomjs*/bin/phantomjs /opt/zenoss/bin'
 
 cat <<EOF>> /home/zenoss/.bashrc
 export ZENHOME=/opt/zenoss
