@@ -92,7 +92,6 @@ $(PKGROOT)/$(RPM):
 		-d 'rsync' \
 		-d sysstat \
 		-d 'sudo >= 1.8.6' \
-		-d 'supervisor = 3.1.3' \
 		-d 'tar' \
 		-d 'wget' \
 		-a $(PLATFORM) \
