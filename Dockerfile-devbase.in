@@ -4,6 +4,13 @@
 FROM zenoss/zenoss-centos-base:%VERSION%
 MAINTAINER Zenoss <dev@zenoss.com>
 
+ENV JAVA_HOME=/usr/lib/jvm/jre \
+    GOROOT=/goENV \
+    GOPATH=/gosrc \
+    PATH=$PATH:/opt/maven/bin:/go/bin
+
+RUN sed -i 's/requiretty/!requiretty/' /etc/sudoers
+
 #
 # The list below was originally based on:
 #
@@ -19,7 +26,6 @@ RUN yum install epel-release -y \
     'Development Tools' \
     autoconf \
     bc \
-    binutils \
     bzip2-devel \
     bzr \
     cyrus-sasl-devel \
@@ -27,23 +33,13 @@ RUN yum install epel-release -y \
     gcc-c++ \
     gdbm-devel \
     git \
-    gnupg \
-    libaio \
-    libcap \
-    libgcj \
-    libgomp \
-    libxslt \
     mercurial \
     mock \
-    net-snmp-libs \
-    openssl-devel \
     pango-devel \
-    pcre-devel \
     perl-XML-XPath \
     protobuf-compiler \
     python-devel \
     python-virtualenv \
-    readline \
     readline-devel \
     rpmdevtools \
     sqlite-devel \
@@ -56,21 +52,14 @@ RUN yum install epel-release -y \
 # Install the JDK
 #
 RUN yum -y --setopt=tsflags="nodocs" install java-1.8.0-openjdk-devel && /sbin/scrub.sh
-ENV JAVA_HOME /usr/lib/jvm/jre
 
 #
 # Install Maven
 #
 RUN mkdir -p /opt/maven
 RUN wget -qO- http://apache.osuosl.org/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz | tar -C /opt/maven -xz --strip-components=1
-ENV PATH $PATH:/opt/maven/bin
 
 #
 # Install GO 1.6.1
 #
 RUN wget -qO- https://storage.googleapis.com/golang/go1.6.1.linux-amd64.tar.gz | tar -C / -xz
-ENV GOROOT /go
-ENV GOPATH /gosrc
-ENV PATH $PATH:/go/bin
-
-RUN sed -i 's/requiretty/!requiretty/' /etc/sudoers
