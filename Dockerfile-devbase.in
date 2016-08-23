@@ -1,0 +1,65 @@
+#
+# Dockerfile for zenoss/zenoss-dev-base - the base image for Zenoss development images.
+#
+FROM zenoss/zenoss-centos-base:%VERSION%
+MAINTAINER Zenoss <dev@zenoss.com>
+
+ENV JAVA_HOME=/usr/lib/jvm/jre \
+    GOROOT=/go \
+    GOPATH=/gosrc \
+    PATH=$PATH:/opt/maven/bin:/go/bin
+
+RUN sed -i 's/requiretty/!requiretty/' /etc/sudoers
+
+#
+# The list below was originally based on:
+#
+# A.) the intersection of the 5.1.x build image and the 5.2.x image for Jenkins builds:
+#         https://github.com/zenoss/platform-build/blob/develop/rpmbuild/Dockerfile
+#     vs
+#         https://github.com/zenoss/build-tools/blob/develop/Dockerfile
+#
+# B.) Minus packages already defined in zenoss-centos-base
+#
+RUN yum install epel-release -y \
+    && yum -y install \
+    'Development Tools' \
+    autoconf \
+    bc \
+    bzip2-devel \
+    bzr \
+    cyrus-sasl-devel \
+    gcc \
+    gcc-c++ \
+    gdbm-devel \
+    git \
+    mercurial \
+    mock \
+    pango-devel \
+    perl-XML-XPath \
+    protobuf-compiler \
+    python-devel \
+    python-virtualenv \
+    readline-devel \
+    rpmdevtools \
+    sqlite-devel \
+    subversion \
+    swig \
+    && yum erase epel-release -y \
+    && /sbin/scrub.sh
+
+#
+# Install the JDK
+#
+RUN yum -y --setopt=tsflags="nodocs" install java-1.8.0-openjdk-devel && /sbin/scrub.sh
+
+#
+# Install Maven
+#
+RUN mkdir -p /opt/maven
+RUN wget -qO- http://apache.osuosl.org/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz | tar -C /opt/maven -xz --strip-components=1
+
+#
+# Install GO 1.6.1
+#
+RUN wget -qO- https://storage.googleapis.com/golang/go1.6.1.linux-amd64.tar.gz | tar -C / -xz
