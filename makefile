@@ -4,7 +4,7 @@
 
 NAME    ?= zenoss-centos-deps
 IMAGENAME = zenoss-centos-base
-VERSION ?= 1.2.6
+VERSION ?= 1.2.7-dev
 TAG = zenoss/$(IMAGENAME):$(VERSION)
 DEV_TAG = zenoss/$(IMAGENAME):$(VERSION).devtools
 ITERATION ?= 1
