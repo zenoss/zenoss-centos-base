@@ -29,7 +29,7 @@ desc:
 
 # Clean staged files and produced packages
 .PHONY: clean
-clean: 
+clean:
 	rm -rf $(PKGROOT)
 
 .PHONY: mrclean
@@ -46,7 +46,7 @@ rpm: image $(PKGROOT)/$(RPM)
 
 # Make an RPM
 .PHONY: $(PGKROOT)/$(RPM)
-$(PKGROOT)/$(RPM): 
+$(PKGROOT)/$(RPM):
 	docker run -v "${PWD}/$(PKGROOT):/pkg" -i --rm zenoss-fpm bash -c "fpm \
 		--verbose \
 		-t rpm \
@@ -65,18 +65,6 @@ $(PKGROOT)/$(RPM):
 		-d 'mariadb-server = 1:5.5.52' \
 		-d 'memcached = 1.4.15' \
 		-d 'MySQL-python = 1.2.5' \
-		-d 'nagios-common = 4.0.8' \
-		-d 'nagios-plugins = 2.1.4' \
-		-d 'nagios-plugins-perl = 2.1.4' \
-		-d 'nagios-plugins-dig  = 2.1.4' \
-		-d 'nagios-plugins-dns  = 2.1.4' \
-		-d 'nagios-plugins-http = 2.1.4' \
-		-d 'nagios-plugins-ircd = 2.1.4' \
-		-d 'nagios-plugins-ldap = 2.1.4' \
-		-d 'nagios-plugins-ntp  = 2.1.4' \
-		-d 'nagios-plugins-ping = 2.1.4' \
-		-d 'nagios-plugins-rpc  = 2.1.4' \
-		-d 'nagios-plugins-tcp  = 2.1.4' \
 		-d 'net-snmp = 1:5.7.2' \
 		-d 'net-snmp-utils = 1:5.7.2' \
 		-d 'net-tools = 2.0' \
@@ -88,7 +76,7 @@ $(PKGROOT)/$(RPM):
 		-d 'python = 2.7.5' \
 		-d 'python-kerberos = 1.1' \
 		-d 'rabbitmq-server = 3.3.5' \
-		-d 'redis = 2.8.19'\
+		-d 'redis = 3.2.3'\
 		-d 'rsync' \
 		-d sysstat \
 		-d 'sudo >= 1.8.6' \
@@ -103,4 +91,3 @@ $(PKGROOT)/$(RPM):
 		--url '$(URL)' \
 		--category $(CATEGORY) \
 		. && chown -R $(DUID):$(DGID) /pkg"
-
