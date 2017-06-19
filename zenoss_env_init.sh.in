@@ -62,7 +62,7 @@ pip install virtualenv
 su - zenoss -c 'virtualenv /opt/zenoss && virtualenv --relocatable /opt/zenoss' 
 
 cd /tmp 
-wget -qO- http://zenpip.zendev.org/packages/%PYDEPS%.tar.gz | tar xz 
+wget -qO- http://zenpip.zenoss.eng/packages/%PYDEPS%.tar.gz | tar xz 
 su - zenoss -c 'source /opt/zenoss/bin/activate && \
     pip install --use-wheel --no-index --find-links=/tmp/%PYDEPS%/wheelhouse -r /tmp/%PYDEPS%/requirements.txt wheel && \
     cd /tmp/%PYDEPS%/ && \
@@ -70,7 +70,7 @@ su - zenoss -c 'source /opt/zenoss/bin/activate && \
 
 echo "Installing jsbuilder..."
 cd /tmp
-wget -q http://zenpip.zendev.org/packages/%JSBUILDER%.zip -O /tmp/JSBuilder.zip
+wget -q http://zenpip.zenoss.eng/packages/%JSBUILDER%.zip -O /tmp/JSBuilder.zip
 unzip -d /tmp/JSBuilder JSBuilder.zip
 su - zenoss -c 'mkdir -p /opt/zenoss/share/java/sencha_jsbuilder-2 &&  \
     cp /tmp/JSBuilder/*.jar /opt/zenoss/share/java/sencha_jsbuilder-2 && \
@@ -78,7 +78,7 @@ su - zenoss -c 'mkdir -p /opt/zenoss/share/java/sencha_jsbuilder-2 &&  \
 
 echo "Installing phantomjs..."
 cd /tmp
-wget http://zenpip.zendev.org/packages/phantomjs-%PHANTOMJS%-linux-x86_64.tar.bz2
+wget http://zenpip.zenoss.eng/packages/phantomjs-%PHANTOMJS%-linux-x86_64.tar.bz2
 su zenoss -c 'tar jxf phantomjs*tar.bz2'
 su zenoss -c 'cp /tmp/phantomjs*/bin/phantomjs /opt/zenoss/bin'
 
