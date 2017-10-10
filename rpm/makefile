@@ -60,11 +60,23 @@ $(PKGROOT)/$(RPM):
 		-d 'gzip' \
 		-d 'bzip2' \
 		-d 'hiredis = 0.12.1' \
-		-d 'krb5-workstation = 1.14.1' \
+		-d 'krb5-workstation = 1.15.1' \
 		-d 'libsmi = 0.4.8' \
-		-d 'mariadb-server = 1:5.5.52' \
+		-d 'mariadb-server = 1:5.5.56' \
 		-d 'memcached = 1.4.15' \
 		-d 'MySQL-python = 1.2.5' \
+		-d 'nagios-common = 4.3.2' \
+		-d 'nagios-plugins = 2.2.1' \
+		-d 'nagios-plugins-perl = 2.2.1' \
+		-d 'nagios-plugins-dig  = 2.2.1' \
+		-d 'nagios-plugins-dns  = 2.2.1' \
+		-d 'nagios-plugins-http = 2.2.1' \
+		-d 'nagios-plugins-ircd = 2.2.1' \
+		-d 'nagios-plugins-ldap = 2.2.1' \
+		-d 'nagios-plugins-ntp  = 2.2.1' \
+		-d 'nagios-plugins-ping = 2.2.1' \
+		-d 'nagios-plugins-rpc  = 2.2.1' \
+		-d 'nagios-plugins-tcp  = 2.2.1' \
 		-d 'net-snmp = 1:5.7.2' \
 		-d 'net-snmp-utils = 1:5.7.2' \
 		-d 'net-tools = 2.0' \
@@ -76,7 +88,7 @@ $(PKGROOT)/$(RPM):
 		-d 'python = 2.7.5' \
 		-d 'python-kerberos = 1.1' \
 		-d 'rabbitmq-server = 3.3.5' \
-		-d 'redis = 3.2.3'\
+		-d 'redis = 3.2.10'\
 		-d 'rsync' \
 		-d sysstat \
 		-d 'sudo >= 1.8.6' \
