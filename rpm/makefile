@@ -65,7 +65,7 @@ $(PKGROOT)/$(RPM):
 		-d 'mariadb-server = 1:5.5.56' \
 		-d 'memcached = 1.4.15' \
 		-d 'MySQL-python = 1.2.5' \
-		-d 'nagios-common = 4.3.2' \
+		-d 'nagios-common = 4.3.4' \
 		-d 'nagios-plugins = 2.2.1' \
 		-d 'nagios-plugins-perl = 2.2.1' \
 		-d 'nagios-plugins-dig  = 2.2.1' \
