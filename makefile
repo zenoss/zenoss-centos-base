@@ -2,22 +2,22 @@
 # RPM builder for Zenoss base depenencies
 #
 
-NAME    ?= zenoss-centos-deps
-IMAGENAME = zenoss-centos-base
-VERSION ?= 1.2.15
-TAG = zenoss/$(IMAGENAME):$(VERSION)
-DEV_TAG = zenoss/$(IMAGENAME):$(VERSION).devtools
-ITERATION ?= 1
-PLATFORM = x86_64
+NAME       ?= zenoss-centos-deps
+IMAGENAME  := zenoss-centos-base
+VERSION    ?= 1.2.16
+TAG        := zenoss/$(IMAGENAME):$(VERSION)
+DEV_TAG    := zenoss/$(IMAGENAME):$(VERSION).devtools
+ITERATION  ?= 1
+PLATFORM   := x86_64
 RPMVERSION := $(subst -,_,$(VERSION))
-RPM =  $(NAME)-$(RPMVERSION)-$(ITERATION).$(PLATFORM).rpm
-PYDEPS = pydeps-5.5.0-el7-1
-JSBUILDER = JSBuilder2
-PHANTOMJS = 1.9.7
+RPM        := $(NAME)-$(RPMVERSION)-$(ITERATION).$(PLATFORM).rpm
+PYDEPS     := pydeps-5.5.1-el7-1
+JSBUILDER  := JSBuilder2
+PHANTOMJS  := 1.9.7
 
 default: build
 
-.PHONY: clean clean-devbase build-base build-devbase build
+.PHONY: clean clean-devbase build build-base build-devbase
 
 # Clean staged files and produced packages
 clean: clean-devbase
@@ -37,7 +37,12 @@ Dockerfile:
 	sed -e 's/%RPM%/$(RPM)/g' Dockerfile.in > $@
 
 zenoss_env_init.sh:
-	sed -e 's/%PYDEPS%/$(PYDEPS)/g' -e 's/%RPM%/$(RPM)/g' -e 's/%JSBUILDER%/$(JSBUILDER)/g' -e 's/%PHANTOMJS%/$(PHANTOMJS)/g'  zenoss_env_init.sh.in > zenoss_env_init.sh
+	sed \
+		-e 's/%PYDEPS%/$(PYDEPS)/g' \
+		-e 's/%RPM%/$(RPM)/g' \
+		-e 's/%JSBUILDER%/$(JSBUILDER)/g' \
+		-e 's/%PHANTOMJS%/$(PHANTOMJS)/g' \
+		$@.in > $@
 
 build: build-base build-devbase
 
