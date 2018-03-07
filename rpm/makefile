@@ -2,22 +2,22 @@
 # RPM builder for Zenoss base depenencies
 #
 
-NAME          ?=
-VERSION       ?=
-PLATFORM      ?=
-ITERATION     ?=
-RPM           ?=
-MAINTAINER    = Zenoss CM <cm@zenoss.com>
-PKGROOT       = pkgroot
-VENDOR        = Zenoss, Inc.
-URL           = http://zenoss.com/
-CATEGORY      = admin
-PWD	      = $(shell pwd)
-DUID         ?= $(shell id -u)
-DGID         ?= $(shell id -g)
+NAME       ?=
+VERSION    ?=
+PLATFORM   ?=
+ITERATION  ?=
+RPM        ?=
+MAINTAINER := Zenoss CM <cm@zenoss.com>
+PKGROOT    := pkgroot
+VENDOR     := Zenoss, Inc.
+URL        := http://zenoss.com/
+CATEGORY   := admin
+PWD        := $(shell pwd)
+DUID       ?= $(shell id -u)
+DGID       ?= $(shell id -g)
 
 PKG_VERSION = $(VERSION)
-FULL_NAME=$(NAME)
+FULL_NAME   = $(NAME)
 
 .PHONY: all clean rpm
 .SILENT: desc
