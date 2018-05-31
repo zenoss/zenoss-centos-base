@@ -36,7 +36,11 @@ yum install -y  --setopt=tsflags="nodocs" \
 # only instal epel here to prevent accidental installs from epel
 yum install epel-release -y 
 
-yum install -y  /tmp/%RPM% 
+# Install the libsmi package  ** INSTALL BEFORE zenoss-centos-deps pkg **
+yum install -y  /tmp/%RPM_LIBSMI% 
+
+# Install the zenoss-centos-deps package
+yum install -y  /tmp/%RPM_DEPS% 
 
 yum erase epel-release -y
 
@@ -64,7 +68,7 @@ su - zenoss -c 'virtualenv /opt/zenoss && virtualenv --relocatable /opt/zenoss'
 cd /tmp 
 wget -qO- http://zenpip.zenoss.eng/packages/%PYDEPS%.tar.gz | tar xz 
 su - zenoss -c 'source /opt/zenoss/bin/activate && \
-    pip install --use-wheel --no-index --find-links=/tmp/%PYDEPS%/wheelhouse -r /tmp/%PYDEPS%/requirements.txt wheel && \
+    pip install --no-index --find-links=/tmp/%PYDEPS%/wheelhouse -r /tmp/%PYDEPS%/requirements.txt wheel && \
     cd /tmp/%PYDEPS%/ && \
     cat patches/* | patch -d $(python -c "import pip, os.path; print os.path.dirname(pip.__path__[0])") -p0 ' 
 
