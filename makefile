@@ -4,16 +4,17 @@
 
 NAME       ?= zenoss-centos-deps
 IMAGENAME  := zenoss-centos-base
-VERSION    ?= 1.2.16
+VERSION    ?= 1.2.17
 TAG        := zenoss/$(IMAGENAME):$(VERSION)
 DEV_TAG    := zenoss/$(IMAGENAME):$(VERSION).devtools
 ITERATION  ?= 1
 PLATFORM   := x86_64
 RPMVERSION := $(subst -,_,$(VERSION))
-RPM        := $(NAME)-$(RPMVERSION)-$(ITERATION).$(PLATFORM).rpm
+RPM_DEPS   := $(NAME)-$(RPMVERSION)-$(ITERATION).$(PLATFORM).rpm
 PYDEPS     := pydeps-5.5.1-el7-1
 JSBUILDER  := JSBuilder2
 PHANTOMJS  := 1.9.7
+RPM_LIBSMI := libsmi-0.5.0-1.el7.x86_64.rpm
 
 default: build
 
@@ -22,32 +23,43 @@ default: build
 # Clean staged files and produced packages
 clean: clean-devbase
 	-docker rmi $(TAG)
-	rm -f Dockerfile zenoss_env_init.sh && (cd rpm && make clean)
+	cd rpm && make clean
+	cd libsmi && make clean
+	rm -f Dockerfile zenoss_env_init.sh
 
 clean-devbase:
 	-docker rmi $(DEV_TAG)
 	rm -f Dockerfile-devbase
 
+# Build libsmi 0.5.0, which is not currently available from the CentOS distro.
+# This can be removed when CentOS ships libsmi 0.5.0
+libsmi/$(RPM_LIBSMI):
+	cd libsmi && make
+
 # Make an RPM so that downstream attempts to override packages for this image will trigger
 # version dependency warnings from yum/rpm
-rpm/pkgroot/$(RPM):
-	cd rpm && make rpm VERSION=$(VERSION) NAME=$(NAME) ITERATION=$(ITERATION) PLATFORM=$(PLATFORM) RPM=$(RPM)
+rpm/pkgroot/$(RPM_DEPS):
+	cd rpm && make rpm VERSION=$(VERSION) NAME=$(NAME) ITERATION=$(ITERATION) PLATFORM=$(PLATFORM) RPM=$(RPM_DEPS)
 
-Dockerfile:
-	sed -e 's/%RPM%/$(RPM)/g' Dockerfile.in > $@
+Dockerfile: Dockerfile.in
+	sed \
+		-e 's/%RPM_DEPS%/$(RPM_DEPS)/g' \
+		-e 's/%RPM_LIBSMI%/$(RPM_LIBSMI)/g' \
+		$< > $@
 
-zenoss_env_init.sh:
+zenoss_env_init.sh: zenoss_env_init.sh.in
 	sed \
 		-e 's/%PYDEPS%/$(PYDEPS)/g' \
-		-e 's/%RPM%/$(RPM)/g' \
+		-e 's/%RPM_DEPS%/$(RPM_DEPS)/g' \
+		-e 's/%RPM_LIBSMI%/$(RPM_LIBSMI)/g' \
 		-e 's/%JSBUILDER%/$(JSBUILDER)/g' \
 		-e 's/%PHANTOMJS%/$(PHANTOMJS)/g' \
-		$@.in > $@
+		$< > $@
 
 build: build-base build-devbase
 
 # Make image for building RPM
-build-base: rpm/pkgroot/$(RPM) Dockerfile zenoss_env_init.sh
+build-base: rpm/pkgroot/$(RPM_DEPS) libsmi/$(RPM_LIBSMI) Dockerfile zenoss_env_init.sh
 	docker build -f Dockerfile -t $(TAG) .
 
 # Make the image for zendev
