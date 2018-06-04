@@ -61,7 +61,7 @@ $(PKGROOT)/$(RPM):
 		-d 'bzip2' \
 		-d 'hiredis = 0.12.1' \
 		-d 'krb5-workstation = 1.15.1' \
-		-d 'libsmi = 0.4.8' \
+		-d 'libsmi = 0.5.0' \
 		-d 'mariadb-server = 1:5.5.56' \
 		-d 'memcached = 1.4.15' \
 		-d 'MySQL-python = 1.2.5' \
