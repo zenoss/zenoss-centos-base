@@ -88,7 +88,7 @@ $(PKGROOT)/$(RPM):
 		-d 'python = 2.7.5' \
 		-d 'python-kerberos = 1.1' \
 		-d 'rabbitmq-server = 3.3.5' \
-		-d 'redis = 3.2.10'\
+		-d 'redis = 3.2.12'\
 		-d 'rsync' \
 		-d sysstat \
 		-d 'sudo >= 1.8.6' \
