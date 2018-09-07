@@ -62,7 +62,7 @@ $(PKGROOT)/$(RPM):
 		-d 'hiredis = 0.12.1' \
 		-d 'krb5-workstation = 1.15.1' \
 		-d 'libsmi = 0.5.0' \
-		-d 'mariadb-server = 1:5.5.56' \
+		-d 'mariadb-server = 1:5.5.60' \
 		-d 'memcached = 1.4.15' \
 		-d 'MySQL-python = 1.2.5' \
 		-d 'nagios-common = 4.3.4' \
