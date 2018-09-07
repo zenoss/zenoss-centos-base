@@ -1,4 +1,4 @@
-FROM zenoss/centos-base:1.1.4-java
+FROM zenoss/centos-base:1.1.5-java
 MAINTAINER Zenoss <dev@zenoss.com>
 
 ADD my.cnf /etc/my.cnf
