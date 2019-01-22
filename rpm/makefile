@@ -56,7 +56,7 @@ $(PKGROOT)/$(RPM):
 		-n $(FULL_NAME) \
 		-v $(PKG_VERSION) \
 		-d 'shadow-utils = 2:4.1.5.1' \
-		-d 'dmidecode = 1:3.0' \
+		-d 'dmidecode = 1:3.1' \
 		-d 'gzip' \
 		-d 'bzip2' \
 		-d 'hiredis = 0.12.1' \
