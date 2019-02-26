@@ -56,7 +56,7 @@ $(PKGROOT)/$(RPM):
 		-n $(FULL_NAME) \
 		-v $(PKG_VERSION) \
 		-d 'shadow-utils = 2:4.1.5.1' \
-		-d 'dmidecode = 1:3.0' \
+		-d 'dmidecode = 1:3.1' \
 		-d 'gzip' \
 		-d 'bzip2' \
 		-d 'hiredis = 0.12.1' \
@@ -65,7 +65,7 @@ $(PKGROOT)/$(RPM):
 		-d 'mariadb-server = 1:5.5.60' \
 		-d 'memcached = 1.4.15' \
 		-d 'MySQL-python = 1.2.5' \
-		-d 'nagios-common = 4.3.4' \
+		-d 'nagios-common = 4.4.3' \
 		-d 'nagios-plugins = 2.2.1' \
 		-d 'nagios-plugins-perl = 2.2.1' \
 		-d 'nagios-plugins-dig  = 2.2.1' \
