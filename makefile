@@ -4,14 +4,14 @@
 
 NAME       ?= zenoss-centos-deps
 IMAGENAME  := zenoss-centos-base
-VERSION    ?= 1.2.21
+VERSION    ?= 1.2.22
 TAG        := zenoss/$(IMAGENAME):$(VERSION)
 DEV_TAG    := zenoss/$(IMAGENAME):$(VERSION).devtools
 ITERATION  ?= 1
 PLATFORM   := x86_64
 RPMVERSION := $(subst -,_,$(VERSION))
 RPM_DEPS   := $(NAME)-$(RPMVERSION)-$(ITERATION).$(PLATFORM).rpm
-PYDEPS     := pydeps-5.5.4-el7-1
+PYDEPS     := pydeps-5.5.5-el7-1
 JSBUILDER  := JSBuilder2
 PHANTOMJS  := 1.9.7
 RPM_LIBSMI := libsmi-0.5.0-1.el7.x86_64.rpm
