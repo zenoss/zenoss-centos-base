@@ -62,7 +62,7 @@ echo -e "NODENAME=rabbit@rbt0\nNODE_IP_ADDRESS=0.0.0.0" > /etc/rabbitmq/rabbitmq
 # setup zenoss python virtualenv
 mkdir -p /opt/zenoss
 chown zenoss:zenoss /opt/zenoss
-pip install virtualenv
+pip install virtualenv==16.7.10
 su - zenoss -c 'virtualenv /opt/zenoss && virtualenv --relocatable /opt/zenoss' 
 
 cd /tmp 
