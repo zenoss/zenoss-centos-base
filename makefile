@@ -11,7 +11,7 @@ ITERATION  ?= 1
 PLATFORM   := x86_64
 RPMVERSION := $(subst -,_,$(VERSION))
 RPM_DEPS   := $(NAME)-$(RPMVERSION)-$(ITERATION).$(PLATFORM).rpm
-PYDEPS     := pydeps-5.6.2-el7-1
+PYDEPS     := pydeps-5.6.3-el7-1
 JSBUILDER  := JSBuilder2
 PHANTOMJS  := 1.9.7
 RPM_LIBSMI := libsmi-0.5.0-1.el7.x86_64.rpm
@@ -66,8 +66,8 @@ build-base: rpm/pkgroot/$(RPM_DEPS) libsmi/$(RPM_LIBSMI) Dockerfile zenoss_env_i
 build-devbase: build-base Dockerfile-devbase
 	docker build -f Dockerfile-devbase -t $(DEV_TAG) .
 
-Dockerfile-devbase:
-	sed -e 's/%VERSION%/$(VERSION)/g' Dockerfile-devbase.in >$@
+Dockerfile-devbase: Dockerfile-devbase.in
+	sed -e 's/%VERSION%/$(VERSION)/g' $< >$@
 
 push:
 	docker push $(TAG)
