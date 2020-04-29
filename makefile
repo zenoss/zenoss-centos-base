@@ -4,7 +4,7 @@
 
 NAME       ?= zenoss-centos-deps
 IMAGENAME  := zenoss-centos-base
-VERSION    ?= 1.2.27
+VERSION    ?= 1.2.28
 TAG        := zenoss/$(IMAGENAME):$(VERSION)
 DEV_TAG    := zenoss/$(IMAGENAME):$(VERSION).devtools
 ITERATION  ?= 1
@@ -13,7 +13,7 @@ RPMVERSION := $(subst -,_,$(VERSION))
 RPM_DEPS   := $(NAME)-$(RPMVERSION)-$(ITERATION).$(PLATFORM).rpm
 PYDEPS     := pydeps-5.6.4-el7-1
 JSBUILDER  := JSBuilder2
-PHANTOMJS  := 1.9.7
+PHANTOMJS  := 2.1.1
 RPM_LIBSMI := libsmi-0.5.0-1.el7.x86_64.rpm
 
 default: build
