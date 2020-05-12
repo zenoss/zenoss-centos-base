@@ -2,56 +2,71 @@
 # RPM builder for Zenoss base depenencies
 #
 
-NAME       ?= zenoss-centos-deps
-IMAGENAME  := zenoss-centos-base
-VERSION    ?= 1.2.29
-TAG        := zenoss/$(IMAGENAME):$(VERSION)
-DEV_TAG    := zenoss/$(IMAGENAME):$(VERSION).devtools
+include versions.mk
+
+# zenoss-centos-base Docker image
+PROJECT   := zenoss
+NAME      := zenoss-centos-base
+IMAGE     := $(PROJECT)/$(NAME):$(VERSION)
+IMAGE_DEV := $(PROJECT)/$(NAME):$(VERSION).devtools
+
+# zenoss-centos-deps RPM
+ZDEPS_NAME ?= zenoss-centos-deps
 ITERATION  ?= 1
 PLATFORM   := x86_64
 RPMVERSION := $(subst -,_,$(VERSION))
-RPM_DEPS   := $(NAME)-$(RPMVERSION)-$(ITERATION).$(PLATFORM).rpm
-PYDEPS     := pydeps-5.6.4-el7-1
-JSBUILDER  := JSBuilder2
-PHANTOMJS  := 2.1.1
-RPM_LIBSMI := libsmi-0.5.0-1.el7.x86_64.rpm
+RPM_DEPS   := $(ZDEPS_NAME)-$(RPMVERSION)-$(ITERATION).$(PLATFORM).rpm
+
+# pydeps
+PYDEPS := pydeps-$(PYDEPS_VERSION)-el7-1
+
+# jsbuilder
+JSBUILDER := JSBuilder2
+
+# phantomjs
+PHANTOMJS := phantomjs-$(PHANTOMJS_VERSION)-linux-x86_64
+
+# libsmi
+RPM_LIBSMI := libsmi-$(LIBSMI_VERSION).el7.x86_64.rpm
+
+.PHONY: clean clean-devbase build build-base build-devbase default
 
 default: build
 
-.PHONY: clean clean-devbase build build-base build-devbase
-
 # Clean staged files and produced packages
 clean: clean-devbase
-	-docker rmi $(TAG)
-	cd rpm && make clean
-	cd libsmi && make clean
-	rm -f Dockerfile zenoss_env_init.sh
+	-docker rmi $(IMAGE)
+	rm -f Dockerfile zenoss_env_init.sh zenoss_deps_install.sh
+	make -C rpm clean
 
 clean-devbase:
-	-docker rmi $(DEV_TAG)
+	-docker rmi $(IMAGE_DEV)
 	rm -f Dockerfile-devbase
 
-# Build libsmi 0.5.0, which is not currently available from the CentOS distro.
-# This can be removed when CentOS ships libsmi 0.5.0
-libsmi/$(RPM_LIBSMI):
-	cd libsmi && make
+$(RPM_LIBSMI):
+	wget http://zenpip.zenoss.eng/packages/$(RPM_LIBSMI) -O $@
 
 # Make an RPM so that downstream attempts to override packages for this image will trigger
 # version dependency warnings from yum/rpm
 rpm/pkgroot/$(RPM_DEPS):
-	cd rpm && make rpm VERSION=$(VERSION) NAME=$(NAME) ITERATION=$(ITERATION) PLATFORM=$(PLATFORM) RPM=$(RPM_DEPS)
+	make -C rpm rpm VERSION=$(VERSION) NAME=$(ZDEPS_NAME) ITERATION=$(ITERATION) PLATFORM=$(PLATFORM) RPM=$(RPM_DEPS)
 
 Dockerfile: Dockerfile.in
 	sed \
+		-e 's/%BASE_VERSION%/$(BASE_VERSION)/g' \
 		-e 's/%RPM_DEPS%/$(RPM_DEPS)/g' \
 		-e 's/%RPM_LIBSMI%/$(RPM_LIBSMI)/g' \
 		$< > $@
 
 zenoss_env_init.sh: zenoss_env_init.sh.in
 	sed \
-		-e 's/%PYDEPS%/$(PYDEPS)/g' \
 		-e 's/%RPM_DEPS%/$(RPM_DEPS)/g' \
 		-e 's/%RPM_LIBSMI%/$(RPM_LIBSMI)/g' \
+		$< > $@
+
+zenoss_deps_install.sh: zenoss_deps_install.sh.in
+	sed \
+		-e 's/%PYDEPS%/$(PYDEPS)/g' \
 		-e 's/%JSBUILDER%/$(JSBUILDER)/g' \
 		-e 's/%PHANTOMJS%/$(PHANTOMJS)/g' \
 		$< > $@
@@ -59,19 +74,19 @@ zenoss_env_init.sh: zenoss_env_init.sh.in
 build: build-base build-devbase
 
 # Make image for building RPM
-build-base: rpm/pkgroot/$(RPM_DEPS) libsmi/$(RPM_LIBSMI) Dockerfile zenoss_env_init.sh
-	docker build -f Dockerfile -t $(TAG) .
+build-base: rpm/pkgroot/$(RPM_DEPS) $(RPM_LIBSMI) Dockerfile zenoss_env_init.sh zenoss_deps_install.sh
+	docker build -f Dockerfile -t $(IMAGE) .
 
 # Make the image for zendev
 build-devbase: build-base Dockerfile-devbase
-	docker build -f Dockerfile-devbase -t $(DEV_TAG) .
+	docker build -f Dockerfile-devbase -t $(IMAGE_DEV) .
 
 Dockerfile-devbase: Dockerfile-devbase.in
 	sed -e 's/%VERSION%/$(VERSION)/g' $< >$@
 
 push:
-	docker push $(TAG)
-	docker push $(DEV_TAG)
+	docker push $(IMAGE)
+	docker push $(IMAGE_DEV)
 
 # Generate a make failure if the VERSION string contains "-<some letters>"
 verifyVersion:
@@ -79,7 +94,7 @@ verifyVersion:
 
 # Generate a make failure if the image(s) already exist
 verifyImage:
-	@./verifyImage.sh zenoss/$(IMAGENAME) $(VERSION)
+	@./verifyImage.sh $(IMAGE) $(VERSION)
 
 # Do not release if the image version is invalid
 # This target is intended for use when trying to build/publish images from the master branch
