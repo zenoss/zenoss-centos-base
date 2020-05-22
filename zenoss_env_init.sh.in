@@ -1,27 +1,27 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 set -x
 
 # Add application users/groups
-groupadd        -g 1201         -r epmd 
-useradd -u 1201 -g epmd         -r epmd         -d /tmp -s /sbin/nologin -c "Erlang Port Mapper Daemon" 
-groupadd        -g 1202         -r nagios 
-useradd -u 1202 -g nagios       -r nagios       -d /var/spool/nagios -s /sbin/nologin 
-groupadd        -g 1203         -r rabbitmq 
-useradd -u 1203 -g rabbitmq     -r rabbitmq     -d /var/lib/rabbitmq -c "RabbitMQ messaging server" 
-groupadd        -g 1204         -r redis 
-useradd -u 1204 -g redis        -r redis        -d /var/lib/redis -s /sbin/nologin -c "Redis Database Server" 
-groupadd        -g 1205         -r memcached 
-useradd -u 1205 -g memcached    -r memcached    -d /run/memcached -s /sbin/nologin -c "Memcached daemon" 
-#groupadd        -g 1207         -r solr 
-#useradd -u 1207 -g solr         -r solr         -d /opt/solr -s /sbin/nologin -c "Solr" 
-groupadd        -g 1206         -r zenoss 
-useradd -u 1337 -g zenoss       zenoss          -c "Zenoss Account"
+groupadd        -g 1201      -r epmd 
+useradd -u 1201 -g epmd      -r epmd      -d /tmp -s /sbin/nologin -c "Erlang Port Mapper Daemon" 
+groupadd        -g 1202      -r nagios 
+useradd -u 1202 -g nagios    -r nagios    -d /var/spool/nagios -s /sbin/nologin 
+groupadd        -g 1203      -r rabbitmq 
+useradd -u 1203 -g rabbitmq  -r rabbitmq  -d /var/lib/rabbitmq -c "RabbitMQ messaging server" 
+groupadd        -g 1204      -r redis 
+useradd -u 1204 -g redis     -r redis     -d /var/lib/redis -s /sbin/nologin -c "Redis Database Server" 
+groupadd        -g 1205      -r memcached 
+useradd -u 1205 -g memcached -r memcached -d /run/memcached -s /sbin/nologin -c "Memcached daemon" 
+#groupadd        -g 1207      -r solr 
+#useradd -u 1207 -g solr      -r solr      -d /opt/solr -s /sbin/nologin -c "Solr" 
+groupadd        -g 1206      -r zenoss 
+useradd -u 1337 -g zenoss    zenoss       -c "Zenoss Account"
 
 
 # TODO: change this repo to use zenoss yum repo
-yum install -y  --setopt=tsflags="nodocs" \
+yum install -y --setopt=tsflags="nodocs" \
     patch \
     device-mapper-libs \
     libaio \
@@ -33,14 +33,14 @@ yum install -y  --setopt=tsflags="nodocs" \
     libasyncns \
     xorg-x11-fonts-Type1 
 
-# only instal epel here to prevent accidental installs from epel
+# only install epel here to prevent accidental installs from epel
 yum install epel-release -y 
 
 # Install the libsmi package  ** INSTALL BEFORE zenoss-centos-deps pkg **
-yum install -y  /tmp/%RPM_LIBSMI% 
+yum install -y /tmp/%RPM_LIBSMI% 
 
 # Install the zenoss-centos-deps package
-yum install -y  /tmp/%RPM_DEPS% 
+yum install -y /tmp/%RPM_DEPS% 
 
 yum erase epel-release -y
 
@@ -63,37 +63,8 @@ echo -e "NODENAME=rabbit@rbt0\nNODE_IP_ADDRESS=0.0.0.0" > /etc/rabbitmq/rabbitmq
 mkdir -p /opt/zenoss
 chown zenoss:zenoss /opt/zenoss
 pip install virtualenv==16.7.10
-su - zenoss -c 'virtualenv /opt/zenoss && virtualenv --relocatable /opt/zenoss' 
 
-cd /tmp 
-wget -qO- http://zenpip.zenoss.eng/packages/%PYDEPS%.tar.gz | tar xz 
-su - zenoss -c 'source /opt/zenoss/bin/activate && \
-    pip install --no-index --find-links=/tmp/%PYDEPS%/wheelhouse -r /tmp/%PYDEPS%/requirements.txt wheel && \
-    cd /tmp/%PYDEPS%/ && \
-    cat patches/* | patch -d $(python -c "import pip, os.path; print os.path.dirname(pip.__path__[0])") -p0 ' 
-
-echo "Installing jsbuilder..."
-cd /tmp
-wget -q http://zenpip.zenoss.eng/packages/%JSBUILDER%.zip -O /tmp/JSBuilder.zip
-unzip -d /tmp/JSBuilder JSBuilder.zip
-su - zenoss -c 'mkdir -p /opt/zenoss/share/java/sencha_jsbuilder-2 &&  \
-    cp /tmp/JSBuilder/*.jar /opt/zenoss/share/java/sencha_jsbuilder-2 && \
-    cp /tmp/JSBuilder/Readme.txt /opt/zenoss/share/java/sencha_jsbuilder-2'
-
-echo "Installing phantomjs..."
-cd /tmp
-wget http://zenpip.zenoss.eng/packages/phantomjs-%PHANTOMJS%-linux-x86_64.tar.bz2
-su zenoss -c 'tar jxf phantomjs*tar.bz2'
-su zenoss -c 'cp /tmp/phantomjs*/bin/phantomjs /opt/zenoss/bin'
-
-cat <<EOF>> /home/zenoss/.bashrc
-export ZENHOME=/opt/zenoss
-source /opt/zenoss/bin/activate
-export PYTHONPATH=/opt/zenoss/lib/python
-export PATH=/opt/zenoss/bin:/opt/zenoss/var/ext/bin:$PATH
-EOF
-
-echo "Deleting pyc and pyo files..."
-find /opt/zenoss -name \*.py[co] -delete
+# Finish the installation as the zenoss user.
+su - zenoss -c "/tmp/zenoss_deps_install.sh"
 
 /sbin/scrub.sh

@@ -3,6 +3,8 @@ rpm/pkgroot
 Dockerfile
 Dockerfile-devbase
 zenoss_env_init.sh
+zenoss_deps_install.sh
+libsmi*.rpm
 
 # OSX
 .DS_Store
