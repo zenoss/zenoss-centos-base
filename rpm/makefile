@@ -8,13 +8,15 @@ PLATFORM   ?=
 ITERATION  ?=
 RPM        ?=
 MAINTAINER := Zenoss CM <cm@zenoss.com>
-PKGROOT    := pkgroot
 VENDOR     := Zenoss, Inc.
 URL        := http://zenoss.com/
 CATEGORY   := admin
+DEST       := dest
 PWD        := $(shell pwd)
-DUID       ?= $(shell id -u)
-DGID       ?= $(shell id -g)
+UID        ?= $(shell id -u)
+GID        ?= $(shell id -g)
+
+$(info Building the $(RPM) rpm.)
 
 PKG_VERSION = $(VERSION)
 FULL_NAME   = $(NAME)
@@ -30,28 +32,45 @@ desc:
 # Clean staged files and produced packages
 .PHONY: clean
 clean:
-	rm -rf $(PKGROOT)
+	rm -rf $(DEST) Dockerfile
 
 .PHONY: mrclean
 mrclean: clean
 
-$(PKGROOT):
-	mkdir -p $@
-
 # Make image for building RPM
-image:
+image: Dockerfile
 	docker build -t zenoss-fpm .
 
-rpm: image $(PKGROOT)/$(RPM)
+rpm: image $(DEST)/$(RPM)
 
-# Make an RPM
-.PHONY: $(PGKROOT)/$(RPM)
-$(PKGROOT)/$(RPM):
-	docker run -v "${PWD}/$(PKGROOT):/pkg" -i --rm zenoss-fpm bash -c "fpm \
+$(DEST):
+	mkdir -p $@
+
+Dockerfile: Dockerfile.in
+	@sed -e "s/%GID%/$(GID)/g" -e "s/%UID%/$(UID)/g" $< > $@
+
+$(DEST)/$(RPM): | $(DEST)
+$(DEST)/$(RPM): Dockerfile
+	docker run \
+		-v "$(PWD)/$(DEST):/pkg" \
+		-v "$(PWD):/work" \
+		-w "/work" \
+		-e RPM=$(RPM) \
+		-e NAME=$(NAME) \
+		-e VERSION=$(VERSION) \
+		-e PLATFORM=$(PLATFORM) \
+		-e ITERATION=$(ITERATION) \
+		-i \
+		--rm \
+		zenoss-fpm \
+		make /pkg/$(RPM)
+
+/pkg/$(RPM):
+	fpm \
 		--verbose \
 		-t rpm \
 		-s dir \
-		-C . \
+		-C /pkg \
 		-p /pkg \
 		-n $(FULL_NAME) \
 		-v $(PKG_VERSION) \
@@ -90,7 +109,7 @@ $(PKGROOT)/$(RPM):
 		-d 'rabbitmq-server = 3.3.5' \
 		-d 'redis >= 3.2.12'\
 		-d 'rsync' \
-		-d sysstat \
+		-d 'sysstat' \
 		-d 'sudo >= 1.8.6' \
 		-d 'tar' \
 		-d 'wget' \
@@ -102,4 +121,4 @@ $(PKGROOT)/$(RPM):
 		--vendor '$(VENDOR)' \
 		--url '$(URL)' \
 		--category $(CATEGORY) \
-		. && chown -R $(DUID):$(DGID) /pkg"
+		.

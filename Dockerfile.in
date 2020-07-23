@@ -1,12 +1,13 @@
 FROM zenoss/centos-base:%BASE_VERSION%
 MAINTAINER Zenoss <dev@zenoss.com>
 
-ADD my.cnf /etc/my.cnf
-
-ADD ./rpm/pkgroot/%RPM_DEPS% /tmp/%RPM_DEPS%
-ADD ./%RPM_LIBSMI% /tmp/%RPM_LIBSMI%
-
-ADD zenoss_env_init.sh  /tmp/zenoss_env_init.sh
-ADD zenoss_deps_install.sh  /tmp/zenoss_deps_install.sh
+COPY my.cnf /etc/my.cnf
+COPY rpm/dest/%RPM_DEPS% /tmp/
+COPY %RPM_LIBSMI% /tmp/
+COPY %PYDEPS% /tmp/
+COPY %JSBUILDER% /tmp/
+COPY %PHANTOMJS% /tmp/
+COPY zenoss_env_init.sh  /tmp/zenoss_env_init.sh
+COPY zenoss_deps_install.sh  /tmp/zenoss_deps_install.sh
 
 RUN chmod +x /tmp/zenoss_env_init.sh /tmp/zenoss_deps_install.sh && /tmp/zenoss_env_init.sh
