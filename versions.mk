@@ -2,7 +2,7 @@
 VERSION = $(shell cat VERSION)
 
 # Version of centos-base to build zenoss-centos-base from
-BASE_VERSION = 1.1.7-java
+BASE_VERSION = 1.1.8-java
 
 # Version of pydeps package to install
 PYDEPS_VERSION = 5.6.4
