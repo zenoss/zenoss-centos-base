@@ -1,13 +1,80 @@
-FROM zenoss/centos-base:%BASE_VERSION%
-MAINTAINER Zenoss <dev@zenoss.com>
+FROM zenoss/centos-base:%BASE_VERSION% AS base
+
+RUN groupadd epmd -r -g 1201 \
+	&& useradd  epmd -r -g epmd -u 1201 -d /tmp -s /sbin/nologin -c "Erlang Port Mapper Daemon" \
+	&& groupadd nagios -r -g 1202 \
+	&& useradd  nagios -r -g nagios -u 1202 -d /var/spool/nagios -s /sbin/nologin \
+	&& groupadd rabbitmq -r -g 1203 \
+	&& useradd  rabbitmq -r -g rabbitmq -u 1203 -d /var/lib/rabbitmq -c "RabbitMQ messaging server" \
+	&& groupadd redis -r -g 1204 \
+	&& useradd  redis -r -g redis -u 1204 -d /var/lib/redis -s /sbin/nologin -c "Redis Database Server" \
+	&& groupadd memcached -r -g 1205 \
+	&& useradd  memcached -r -g memcached -u 1205 -d /run/memcached -s /sbin/nologin -c "Memcached daemon" \
+	&& groupadd zenoss -r -g 1206 \
+	&& useradd  zenoss -g zenoss -u 1337 -c "Zenoss Account"
 
 COPY my.cnf /etc/my.cnf
-COPY rpm/dest/%RPM_DEPS% /tmp/
-COPY %RPM_LIBSMI% /tmp/
+
+COPY rpm/dest/%RPM_DEPS% %RPM_LIBSMI% /tmp/
+
+RUN yum install -y --setopt=tsflags="nodocs" epel-release \
+	&& yum install -y --setopt=tsflags="nodocs" /tmp/%RPM_LIBSMI% \
+	&& yum install -y --setopt=tsflags="nodocs" /tmp/%RPM_DEPS% \
+	&& yum erase -y epel-release \
+	&& /sbin/scrub.sh
+
+RUN echo -e "NODENAME=rabbit@rbt0\nNODE_IP_ADDRESS=0.0.0.0" > /etc/rabbitmq/rabbitmq-env.conf
+
+# Symlink /etc/localtime
+RUN rm -f /etc/localtime && ln -s /usr/share/zoneinfo/UTC /etc/localtime
+
+# Creating sym link to remedy library import of serviced
+RUN ln -s /lib64/libdevmapper.so.1.02 /lib64/libdevmapper.so.1.02.1
+
+RUN mkdir -p /opt/zenoss && chown zenoss:zenoss /opt/zenoss
+
+# ==========================================================================================================
+
+FROM base AS build
+
 COPY %PYDEPS% /tmp/
 COPY %JSBUILDER% /tmp/
 COPY %PHANTOMJS% /tmp/
-COPY zenoss_env_init.sh  /tmp/zenoss_env_init.sh
-COPY zenoss_deps_install.sh  /tmp/zenoss_deps_install.sh
 
-RUN chmod +x /tmp/zenoss_env_init.sh /tmp/zenoss_deps_install.sh && /tmp/zenoss_env_init.sh
+# Set SHELL so that subsequent directives execute as the zenoss user.
+SHELL ["/bin/su", "-", "zenoss", "-c"]
+
+RUN pip install --user --no-cache-dir virtualenv==16.7.10
+RUN virtualenv /opt/zenoss && virtualenv --relocatable /opt/zenoss
+RUN echo -e "export ZENHOME=/opt/zenoss\nsource /opt/zenoss/bin/activate\nexport PYTHONPATH=/opt/zenoss/lib/python\nexport PATH=/opt/zenoss/bin:/opt/zenoss/var/ext/bin:$PATH\n" >> /home/zenoss/.bashrc
+
+# Install pydeps
+RUN mkdir -p /tmp/pydeps \
+	&& tar -x -f /tmp/%PYDEPS% --strip-components=1 -C /tmp/pydeps \
+	&& cd /tmp/pydeps \
+	&& pip install --no-index --no-cache-dir --find-links=./wheelhouse -r ./requirements.txt wheel \
+	&& cat patches/* | patch -d $(python -c "import pip, os.path; print os.path.dirname(pip.__path__[0])") -p0
+
+# Install JSBuilder
+RUN unzip -d /tmp/JSBuilder /tmp/%JSBUILDER%
+RUN mkdir -p /opt/zenoss/share/java/sencha_jsbuilder-2
+RUN cp /tmp/JSBuilder/*.jar /opt/zenoss/share/java/sencha_jsbuilder-2
+RUN cp /tmp/JSBuilder/Readme.txt /opt/zenoss/share/java/sencha_jsbuilder-2
+
+# Install PhantomJS
+RUN mkdir -p /tmp/phantomjs
+RUN tar -x -f /tmp/%PHANTOMJS% --strip-components=1 -C /tmp/phantomjs
+RUN cp /tmp/phantomjs/bin/phantomjs /opt/zenoss/bin/
+
+# Delete Python .pyo and .pyc files.
+RUN find /opt/zenoss -name \*.py[co] -delete
+RUN find /home/zenoss -name \*.py[co] -delete
+
+RUN rm -rf /home/zenoss/.cache/*
+
+# ==========================================================================================================
+
+FROM base
+
+COPY --from=build /opt/zenoss /opt/zenoss/
+COPY --from=build /home/zenoss /home/zenoss/

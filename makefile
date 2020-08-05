@@ -46,7 +46,7 @@ ifneq ($(IMAGE_EXISTS),)
 	-docker image rm $(IMAGE)
 	IMAGE_EXISTS=
 endif
-	rm -f Dockerfile zenoss_env_init.sh zenoss_deps_install.sh
+	rm -f Dockerfile
 
 clean-devbase:
 ifneq ($(IMAGE_DEV_EXISTS),)
@@ -64,7 +64,7 @@ rpm/dest/$(RPM_DEPS):
 	make -C rpm rpm VERSION=$(VERSION) NAME=$(ZDEPS_NAME) ITERATION=$(ITERATION) PLATFORM=$(PLATFORM) RPM=$(RPM_DEPS)
 
 Dockerfile: Dockerfile.in
-	sed \
+	@sed \
 		-e 's/%BASE_VERSION%/$(BASE_VERSION)/g' \
 		-e 's/%RPM_DEPS%/$(RPM_DEPS)/g' \
 		-e 's/%RPM_LIBSMI%/$(RPM_LIBSMI)/g' \
@@ -76,37 +76,20 @@ Dockerfile: Dockerfile.in
 Dockerfile-devbase: Dockerfile-devbase.in
 	sed -e 's/%VERSION%/$(VERSION)/g' $< >$@
 
-zenoss_env_init.sh: zenoss_env_init.sh.in
-	sed \
-		-e 's/%RPM_DEPS%/$(RPM_DEPS)/g' \
-		-e 's/%RPM_LIBSMI%/$(RPM_LIBSMI)/g' \
-		$< > $@
-
-zenoss_deps_install.sh: zenoss_deps_install.sh.in
-	sed \
-		-e 's/%PYDEPS%/$(PYDEPS)/g' \
-		-e 's/%JSBUILDER%/$(JSBUILDER)/g' \
-		-e 's/%PHANTOMJS%/$(PHANTOMJS)/g' \
-		$< > $@
-
 build-deps: rpm/dest/$(RPM_DEPS)
 
 build: build-image build-dev-image
 
 # Build the zenoss-centos-base image
 build-image: $(RPM_LIBSMI) $(PYDEPS) $(JSBUILDER) $(PHANTOMJS) 
-build-image: rpm/dest/$(RPM_DEPS) Dockerfile zenoss_env_init.sh zenoss_deps_install.sh
+build-image: rpm/dest/$(RPM_DEPS) Dockerfile
 	@echo Building zenoss-centos-base image...
-	@docker build -f Dockerfile -t $(IMAGE).unsquashed .
-	@./squash_image.sh $(IMAGE).unsquashed $(IMAGE)
-	@docker image rm $(IMAGE).unsquashed
+	@docker build -f Dockerfile -t $(IMAGE) .
 
 # Build the zendev version of the zenoss-centos-base image
 build-dev-image: build-image Dockerfile-devbase
 	@echo Building zendev zenoss-centos-base image...
-	@docker build -f Dockerfile-devbase -t $(IMAGE_DEV).unsquashed .
-	@./squash_image.sh $(IMAGE_DEV).unsquashed $(IMAGE_DEV)
-	@docker image rm $(IMAGE_DEV).unsquashed
+	@docker build -f Dockerfile-devbase -t $(IMAGE_DEV) .
 
 push:
 	docker push $(IMAGE)
