@@ -75,5 +75,5 @@ RUN rm -rf /home/zenoss/.cache/*
 
 FROM base
 
-COPY --from=build /opt/zenoss /opt/zenoss/
-COPY --from=build /home/zenoss /home/zenoss/
+COPY --from=build --chown=zenoss:zenoss /opt/zenoss /opt/zenoss/
+COPY --from=build --chown=zenoss:zenoss /home/zenoss /home/zenoss/
