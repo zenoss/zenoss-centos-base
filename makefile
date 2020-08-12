@@ -63,7 +63,7 @@ $(RPM_LIBSMI) $(PYDEPS) $(JSBUILDER) $(PHANTOMJS):
 rpm/dest/$(RPM_DEPS):
 	make -C rpm rpm VERSION=$(VERSION) NAME=$(ZDEPS_NAME) ITERATION=$(ITERATION) PLATFORM=$(PLATFORM) RPM=$(RPM_DEPS)
 
-Dockerfile: Dockerfile.in
+Dockerfile: Dockerfile.in versions.mk
 	@sed \
 		-e 's/%BASE_VERSION%/$(BASE_VERSION)/g' \
 		-e 's/%RPM_DEPS%/$(RPM_DEPS)/g' \
@@ -73,8 +73,8 @@ Dockerfile: Dockerfile.in
 		-e 's/%PHANTOMJS%/$(PHANTOMJS)/g' \
 		$< > $@
 
-Dockerfile-devbase: Dockerfile-devbase.in
-	sed -e 's/%VERSION%/$(VERSION)/g' $< >$@
+Dockerfile-devbase: Dockerfile-devbase.in versions.mk
+	sed -e 's/%VERSION%/$(VERSION)/g' $< > $@
 
 build-deps: rpm/dest/$(RPM_DEPS)
 
