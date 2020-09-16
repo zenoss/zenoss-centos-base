@@ -37,10 +37,6 @@ RUN mkdir -p /opt/zenoss && chown zenoss:zenoss /opt/zenoss
 
 FROM base AS build
 
-COPY %PYDEPS% /tmp/
-COPY %JSBUILDER% /tmp/
-COPY %PHANTOMJS% /tmp/
-
 # Set SHELL so that subsequent directives execute as the zenoss user.
 SHELL ["/bin/su", "-", "zenoss", "-c"]
 
@@ -48,23 +44,26 @@ RUN pip install --user --no-cache-dir virtualenv==16.7.10
 RUN virtualenv /opt/zenoss && virtualenv --relocatable /opt/zenoss
 RUN echo -e "export ZENHOME=/opt/zenoss\nsource /opt/zenoss/bin/activate\nexport PYTHONPATH=/opt/zenoss/lib/python\nexport PATH=/opt/zenoss/bin:/opt/zenoss/var/ext/bin:$PATH\n" >> /home/zenoss/.bashrc
 
-# Install pydeps
-RUN mkdir -p /tmp/pydeps \
-	&& tar -x -f /tmp/%PYDEPS% --strip-components=1 -C /tmp/pydeps \
-	&& cd /tmp/pydeps \
-	&& pip install --no-index --no-cache-dir --find-links=./wheelhouse -r ./requirements.txt wheel \
-	&& cat patches/* | patch -d $(python -c "import pip, os.path; print os.path.dirname(pip.__path__[0])") -p0
-
 # Install JSBuilder
+COPY %JSBUILDER% /tmp/
 RUN unzip -d /tmp/JSBuilder /tmp/%JSBUILDER%
 RUN mkdir -p /opt/zenoss/share/java/sencha_jsbuilder-2
 RUN cp /tmp/JSBuilder/*.jar /opt/zenoss/share/java/sencha_jsbuilder-2
 RUN cp /tmp/JSBuilder/Readme.txt /opt/zenoss/share/java/sencha_jsbuilder-2
 
 # Install PhantomJS
+COPY %PHANTOMJS% /tmp/
 RUN mkdir -p /tmp/phantomjs
 RUN tar -x -f /tmp/%PHANTOMJS% --strip-components=1 -C /tmp/phantomjs
 RUN cp /tmp/phantomjs/bin/phantomjs /opt/zenoss/bin/
+
+# Install pydeps
+COPY %PYDEPS% /tmp/
+RUN mkdir -p /tmp/pydeps \
+	&& tar -x -f /tmp/%PYDEPS% --strip-components=1 -C /tmp/pydeps \
+	&& cd /tmp/pydeps \
+	&& pip install --no-index --no-cache-dir --find-links=./wheelhouse -r ./requirements.txt wheel \
+	&& cat patches/* | patch -d $(python -c "import pip, os.path; print os.path.dirname(pip.__path__[0])") -p0
 
 # Delete Python .pyo and .pyc files.
 RUN find /opt/zenoss -name \*.py[co] -delete
@@ -76,5 +75,5 @@ RUN rm -rf /home/zenoss/.cache/*
 
 FROM base
 
-COPY --from=build /opt/zenoss /opt/zenoss/
-COPY --from=build /home/zenoss /home/zenoss/
+COPY --from=build --chown=zenoss:zenoss /opt/zenoss /opt/zenoss/
+COPY --from=build --chown=zenoss:zenoss /home/zenoss /home/zenoss/

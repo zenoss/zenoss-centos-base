@@ -5,7 +5,7 @@ VERSION = $(shell cat VERSION)
 BASE_VERSION = 1.1.8-java
 
 # Version of pydeps package to install
-PYDEPS_VERSION = 5.6.4
+PYDEPS_VERSION = 5.7.2
 
 # Version of phantomjs package to install
 PHANTOMJS_VERSION = 1.9.7
