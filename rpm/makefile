@@ -16,8 +16,6 @@ GID  ?= $(shell id -g)
 
 FPM_IMAGE_EXISTS = $(shell docker image list --format '{{.Tag}}' zenoss-fpm)
 
-$(info Building the $(RPM) rpm.)
-
 .PHONY: all clean rpm
 .SILENT: desc
 
