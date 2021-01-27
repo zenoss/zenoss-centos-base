@@ -20,9 +20,6 @@ PLATFORM   := x86_64
 RPMVERSION := $(subst -,_,$(VERSION))
 RPM_DEPS   := $(ZDEPS_NAME)-$(RPMVERSION)-$(ITERATION).$(PLATFORM).rpm
 
-# pydeps package
-PYDEPS := pydeps-$(PYDEPS_VERSION)-el7-1.tar.gz
-
 # jsbuilder archive
 JSBUILDER := JSBuilder2.zip
 
@@ -38,7 +35,7 @@ default: build
 
 # Clean staged files and produced packages
 clean: clean-image clean-devbase
-	rm -f $(RPM_LIBSMI) $(PYDEPS) $(JSBUILDER) $(PHANTOMJS)
+	rm -f $(RPM_LIBSMI) $(JSBUILDER) $(PHANTOMJS)
 	make -C rpm clean
 
 clean-image:
@@ -55,7 +52,7 @@ ifneq ($(IMAGE_DEV_EXISTS),)
 endif
 	rm -f Dockerfile-devbase
 
-$(RPM_LIBSMI) $(PYDEPS) $(JSBUILDER) $(PHANTOMJS):
+$(RPM_LIBSMI) $(JSBUILDER) $(PHANTOMJS):
 	wget http://zenpip.zenoss.eng/packages/$@ -O $@
 
 # Make an RPM so that downstream attempts to override packages for this image will trigger
@@ -68,7 +65,6 @@ Dockerfile: Dockerfile.in versions.mk
 		-e 's/%BASE_VERSION%/$(BASE_VERSION)/g' \
 		-e 's/%RPM_DEPS%/$(RPM_DEPS)/g' \
 		-e 's/%RPM_LIBSMI%/$(RPM_LIBSMI)/g' \
-		-e 's/%PYDEPS%/$(PYDEPS)/g' \
 		-e 's/%JSBUILDER%/$(JSBUILDER)/g' \
 		-e 's/%PHANTOMJS%/$(PHANTOMJS)/g' \
 		$< > $@
@@ -81,10 +77,11 @@ build-deps: rpm/dest/$(RPM_DEPS)
 build: build-image build-dev-image
 
 # Build the zenoss-centos-base image
-build-image: $(RPM_LIBSMI) $(PYDEPS) $(JSBUILDER) $(PHANTOMJS) 
+build-image: $(RPM_LIBSMI) $(JSBUILDER) $(PHANTOMJS) 
 build-image: rpm/dest/$(RPM_DEPS) Dockerfile
 	@echo Building zenoss-centos-base image...
 	@docker build -f Dockerfile -t $(IMAGE) .
+	@docker image rm $$(docker image ls -q --filter="dangling=true")
 
 # Build the zendev version of the zenoss-centos-base image
 build-dev-image: build-image Dockerfile-devbase
