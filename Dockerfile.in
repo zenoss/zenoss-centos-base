@@ -40,7 +40,7 @@ FROM base AS build
 # Set SHELL so that subsequent directives execute as the zenoss user.
 SHELL ["/bin/su", "-", "zenoss", "-c"]
 
-RUN pip install --user --no-cache-dir virtualenv==16.7.10
+RUN pip --no-python-version-warning install --user --no-cache-dir "virtualenv<20"
 RUN virtualenv /opt/zenoss && virtualenv --relocatable /opt/zenoss
 RUN echo -e "export ZENHOME=/opt/zenoss\nsource /opt/zenoss/bin/activate\nexport PYTHONPATH=/opt/zenoss/lib/python\nexport PATH=/opt/zenoss/bin:/opt/zenoss/var/ext/bin:$PATH\n" >> /home/zenoss/.bashrc
 
@@ -56,14 +56,6 @@ COPY %PHANTOMJS% /tmp/
 RUN mkdir -p /tmp/phantomjs
 RUN tar -x -f /tmp/%PHANTOMJS% --strip-components=1 -C /tmp/phantomjs
 RUN cp /tmp/phantomjs/bin/phantomjs /opt/zenoss/bin/
-
-# Install pydeps
-COPY %PYDEPS% /tmp/
-RUN mkdir -p /tmp/pydeps \
-	&& tar -x -f /tmp/%PYDEPS% --strip-components=1 -C /tmp/pydeps \
-	&& cd /tmp/pydeps \
-	&& pip install --no-index --no-cache-dir --find-links=./wheelhouse -r ./requirements.txt wheel \
-	&& cat patches/* | patch -d $(python -c "import pip, os.path; print os.path.dirname(pip.__path__[0])") -p0
 
 # Delete Python .pyo and .pyc files.
 RUN find /opt/zenoss -name \*.py[co] -delete
