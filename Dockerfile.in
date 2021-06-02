@@ -2,8 +2,6 @@ FROM zenoss/centos-base:%BASE_VERSION% AS base
 
 RUN groupadd epmd -r -g 1201 \
 	&& useradd  epmd -r -g epmd -u 1201 -d /tmp -s /sbin/nologin -c "Erlang Port Mapper Daemon" \
-	&& groupadd nagios -r -g 1202 \
-	&& useradd  nagios -r -g nagios -u 1202 -d /var/spool/nagios -s /sbin/nologin \
 	&& groupadd rabbitmq -r -g 1203 \
 	&& useradd  rabbitmq -r -g rabbitmq -u 1203 -d /var/lib/rabbitmq -c "RabbitMQ messaging server" \
 	&& groupadd redis -r -g 1204 \
